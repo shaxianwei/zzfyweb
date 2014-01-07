@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<description>Spring MVC视图解析配置</description>
+
+	<!-- ======================================= -->
+	<!-- spring组件扫描 -->
+	<!-- ======================================= -->
+	<context:component-scan base-package="cn.zzfyip.search.controller" />
+
+	<!-- ======================================= -->
+	<!-- 默认的注解映射的支持 -->
+	<!-- ======================================= -->
+	<context:annotation-config />
+
+	<!-- Spring属性占位符 -->
+	<context:property-placeholder location="classpath:*.properties" ignore-unresolvable="true" />
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/view/" p:suffix=".jsp" />
+
+	<!-- ======================================= -->
+	<!-- responseBody json 支持 -->
+	<!-- ======================================= -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+				<bean class="cn.zzfyip.search.common.support.PlainStringHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- ============================================================== -->
+	<!-- mvc全局的异常仲裁器 -->
+	<!-- ControllerDataException直接返回符合Qunar规范的错误信息（JSON格式） -->
+	<!-- 其余Exception统一跳转到error.vm页面 -->
+	<!-- ============================================================== -->
+	<bean id="exceptionResolver"
+		class="cn.zzfyip.search.common.exception.resolver.ControllerExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.Exception">view/common/error.jsp</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

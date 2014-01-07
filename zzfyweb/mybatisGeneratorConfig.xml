@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<classPathEntry
+		location="D:/Program Files (x86)/Aqua Data Studio 7.5 - 32bit/lib/drivers/postgresql.jar" />
+	<context id="zzfyweb">
+		<jdbcConnection driverClass="org.postgresql.Driver"
+			connectionURL="jdbc:postgresql://localhost:5432/zzfysearch"
+			userId="changsure" password="123456">
+		</jdbcConnection>
+
+		<javaModelGenerator targetPackage="cn.zzfyip.search.dal.common.entity" targetProject="zzfyweb">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<sqlMapGenerator targetPackage="cn.zzfyip.search.dal.common.mapper" targetProject="zzfyweb">
+		</sqlMapGenerator>
+
+		<javaClientGenerator type="XMLMAPPER" targetPackage="cn.zzfyip.search.dal.common.mapper" targetProject="zzfyweb">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+		
+		<table schema="public" tableName="PATENT_MAIN" ></table>
+		<!-- 
+		<table schema="public" tableName="ADD_PATENT_RECORD" ></table>
+		<table schema="public" tableName="PATENT_INFO" ></table>
+		<table schema="public" tableName="PATENT_NOTICE_FAWEN" ></table>
+		<table schema="public" tableName="PATENT_FEE" ></table> -->
+		</context>
+</generatorConfiguration>
+
+<!-- java -jar mybatis-generator-core-1.3.2.jar -configfile /home/simon/workspace/ticket-tts/mybatisGeneratorConfig.xml -->

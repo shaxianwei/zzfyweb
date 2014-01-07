@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.zzfyip.search.dal.order.dao.OrderDao">
+    
+    <resultMap id="findOrderIdByDisplayIdMap" type="cn.zzfyip.search.dal.order.entity.Order">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getNextVal4DynamicOrder" resultType="int">
+    		SELECT
+    		nextval('b2c_order_id_seq');
+    </select>
+    <select id="findOrderIdByDisplayId" resultMap="findOrderIdByDisplayIdMap">
+    		select id from b2c_order where display_id = #{display_id}
+    </select>
+    <select id="findOrderCountByUserName" parameterType="map" resultType="int" >
+        select count(*) from b2c_order LEFT JOIN public.b2c_order_user on b2c_order.id = b2c_order_user.order_id
+        where b2c_order_user.username = #{userName}
+        and <![CDATA[ #{startTime} <= b2c_order.create_time]]>
+        and <![CDATA[ #{endTime} > b2c_order.create_time]]>
+    </select>
+	<select id="selectListMoneyTraceByOrderDisplayIds"
+		resultType="cn.zzfyip.search.data.dto.output.MoneyTraceExportOutputDto">
+		SELECT
+			o.display_id        orderDisplayId,
+			m.refund_quantity   refundQuantity,
+			m.refund_money      refundMoney,
+			m.applier           applier,
+			m.create_time       createTime,
+			m.operator          approver,
+			m.operate_time      operateTime,
+			m.refund_status     refundStatus,
+			m.refund_reason     refundReason,
+			m.refund_desc       refundDesc,
+			m.refund_judge_mark refundJudgeMark
+		FROM
+			b2c_order o LEFT JOIN b2c_money_trace m ON o.last_refund_id=m.id
+		WHERE
+			o.display_id IN <foreach collection="displayIds" open="(" separator="," close=")" item="displayId">#{displayId}</foreach>
+	</select>
+    <resultMap id="findOrderListByQueryMap" type="cn.zzfyip.search.dal.order.entity.BOrder">
+        <result column="orderId" property="orderId" javaType="INTEGER" />
+        <result column="display_id" property="displayId" jdbcType="VARCHAR"/>
+        <result column="title" property="productName" jdbcType="VARCHAR"/>
+         <result column="product_Id" property="productId" jdbcType="INTEGER"/>
+        <result column="pay_way" property="payWay" jdbcType="INTEGER"/>
+        <result column="main_pic" property="productImgUrl" jdbcType="VARCHAR"/>
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR"/>
+        <result column="takeoff_date" property="takeoffDate" jdbcType="DATE"/>
+        <result column="quantity" property="quantity" jdbcType="INTEGER"/>
+        <result column="refund_quantity" property="refundQuantity" jdbcType="INTEGER"/>
+        <result column="money" property="money" jdbcType="BIGINT"/>
+        <result column="retain_money" property="retainMoney" jdbcType="BIGINT"/>
+        <result column="order_source" property="orderSource" jdbcType="VARCHAR"/>
+        <result column="contact_mobile" property="contactMobile" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP"/>
+        <result column="consume_time" property="consumeTime" jdbcType="TIMESTAMP"/>
+        <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="refund_status" property="refundStatus" jdbcType="INTEGER"/>
+        <result column="sue_status" property="sueStatus" jdbcType="VARCHAR"/>
+        <result column="supplier_id" property="supplierId" jdbcType="INTEGER"/>
+        <result column="origin" property="origin" jdbcType="BIGINT"/>
+        <result column="contact_user" property="contactUser" jdbcType="VARCHAR"/>
+        <result column="other_phone" property="contactOtherPhone" jdbcType="VARCHAR" />
+		<result column="email" property="contactEmail" jdbcType="VARCHAR" />
+        <result column="use_quantity" property="useQuantity" jdbcType="INTEGER"/>
+        <result column="is_completed" property="isCompleted" jdbcType="BOOLEAN" />
+        <result column="product_type_name" property="productTypeName" jdbcType="VARCHAR" />
+        <result column="sub_product_count" property="subProductCount" jdbcType="OTHER" />
+        <result column="balance_info" property="balanceInfo" jdbcType="OTHER" />
+        <result column="v_Product_Id" property="vProductId" jdbcType="INTEGER"/>
+        <result column="supplierOrderId" property="supplierOrderId" jdbcType="VARCHAR" />
+        <result column="cancelReason" property="cancelReason" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="findOrderListByQuery" resultMap="findOrderListByQueryMap"
+            parameterType="cn.zzfyip.search.data.condition.OrderCondition">
+        select
+        porder.id as orderId,
+        porder.display_id,
+        vproduct.title,
+        vproduct.id as v_Product_Id,
+        vproduct.product_Id,
+        vproduct.pay_way,
+        vproduct.main_pic,
+        supplier.shop_name,
+        porder.takeoff_date,
+        porder.quantity,
+        porder.supplier_id,
+        porder.use_quantity,
+        porder.refund_quantity,
+        porder.money,
+        porder.retain_money,
+        porder.order_source,
+        porder.contact_mobile,
+        porder.create_time,
+        porder.operate_time,
+        porder.order_status,
+        porder.refund_status,
+        sue.sue_status,
+        porder.origin,
+        porder.contact_user,
+        porder.other_phone,
+        porder.email,
+        porder.is_completed,
+        porder.product_type_name,
+        porder.sub_product_count,
+        porder.balance_info,
+        torder.order_num as supplierOrderId,
+        porder.cancel_reason as cancelReason,
+        porder.remarks as remarks,
+        porder.pay_time
+        from b2c_order porder
+        left join b2c_v_product_summary vproduct on porder.product_id =vproduct.product_id and porder.version = vproduct.version 
+        left join b2c_supplier_info supplier on porder.supplier_id = supplier.id 
+        left join b2c_order_sue sue on porder.id = sue.order_id
+        left join b2c_ticket_order torder on (porder.id = torder.oid)
+        <if test="consumeStartDate != null or consumeEndDate != null">
+			left join b2c_coupon on porder.id = b2c_coupon.order_id
+		</if>
+        where porder.order_status not in (20,30)
+        and vproduct.p_function = 'ticket'
+        <if test="supplierId != null">
+            and porder.supplier_id = #{supplierId,jdbcType=INTEGER}
+        </if>
+        <if test="userName != null">
+            and porder.user_name = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="displayIds != null">
+            and porder.display_id IN <foreach collection="displayIds" open="(" separator="," close=")" item="displayId">#{displayId}</foreach>
+        </if>
+        <if test="productIds != null">
+            and vproduct.product_id in 
+            <foreach collection="productIds" open="(" separator="," close=")" item="productIdList">
+	 			#{productIdList}
+	 		</foreach> 
+        </if>
+        <if test="contactMobile != null">
+            and porder.contact_mobile = #{contactMobile,jdbcType=VARCHAR}
+        </if>
+        <if test="contactUser != null">
+            and porder.contact_user = #{contactUser,jdbcType=VARCHAR}
+        </if>
+        <choose>
+            <when test="useQuantity != null and useQuantity == 0">
+                and ( use_quantity = 0 or use_quantity is null )
+            </when>
+            <when test="useQuantity != null and useQuantity !=0">
+                and use_quantity = #{useQuantity,jdbcType=INTEGER}
+            </when>
+        </choose>
+
+        <if test="money != null" >
+            and porder.money = #{money,jdbcType=BIGINT}
+        </if>
+        <if test="retainMoney != null" >
+            and porder.retain_money = #{retainMoney,jdbcType=BIGINT}
+        </if>
+        <if test="createStartDate != null"> <![CDATA[AND porder.create_time >= #{createStartDate,jdbcType=DATE} ]]></if>
+		<if test="createEndDate != null"> <![CDATA[AND porder.create_time <= #{createEndDate,jdbcType=DATE} ]]></if>
+		<if test="payStartDate != null"><![CDATA[AND porder.pay_time >= #{payStartDate,jdbcType=DATE} ]]></if>
+		<if test="payEndDate != null"><![CDATA[AND porder.pay_time <= #{payEndDate,jdbcType=DATE} ]]></if>
+		<if test="consumeStartDate != null"><![CDATA[AND b2c_coupon.consume_time >= #{consumeStartDate,jdbcType=DATE} ]]></if>
+		<if test="consumeEndDate != null"><![CDATA[AND b2c_coupon.consume_time <= #{consumeEndDate,jdbcType=DATE} ]]></if>
+        <if test="orderStatus != null">
+            and porder.order_status in
+            <foreach collection="orderStatus" open="(" separator="," close=")" item="status">
+	 			#{status}
+	 		</foreach> 
+        </if>
+        <if test="refundStatus != null">
+            and porder.refund_status in
+            <foreach collection="refundStatus" open="(" separator="," close=")" item="status">
+	 			#{status}
+	 		</foreach> 
+        </if>
+        <if test="orderSueStatus != null">
+            and sue.sue_status in
+            <foreach collection="orderSueStatus" open="(" separator="," close=")" item="status">
+	 			#{status}
+	 		</foreach> 
+        </if>
+
+        <if test="orderSource != null">
+            and porder.order_source in
+            <foreach collection="orderSource" open="(" separator="," close=")" item="source">
+                #{source}
+            </foreach>
+        </if>
+
+        <if test="returnCall != null">
+            and porder.return_call = #{returnCall,jdbcType=BOOLEAN}
+        </if>
+        <if test="teamNo != null">
+            and vproduct.team_no = #{teamNo,jdbcType=VARCHAR}
+        </if>
+        <if test="productName != null">
+            and vproduct.title like '%'||#{productName,jdbcType=VARCHAR}||'%'
+        </if>
+        <if test="shopName != null">
+            and supplier.shop_name like '%'||#{shopName,jdbcType=VARCHAR}||'%'
+        </if>
+        
+        <if test="isNotFromTuan == true">
+	        and porder.order_source not like '%_TUAN_%' 
+        </if>
+
+        <choose>
+            <when test="isCompleted == true">
+                and porder.is_completed = true
+            </when>
+            <when test="isCompleted == false">
+                and ( porder.is_completed is null or porder.is_completed = false )
+            </when>
+        </choose>
+        
+        <!-- WARNING - 自定义查询 使用前和reeboo沟通需求 -->
+        <if test="userDefinedQuery != null">
+        	<if test="userDefinedQuery == 'USER_ORDER_SUCCESS_QUERY'">
+            	<include refid="userOrderSuccessQuery" />
+        	</if>
+        	<if test="userDefinedQuery == 'USER_ORDER_CONSUMED_QUERY'">
+            	<include refid="userOrderConsumedQuery" />
+        	</if>
+            <if test="userDefinedQuery == 'PART_CONSUMED_QUERY'">
+                <include refid="partConsumedQuery" />
+            </if>
+            <if test="userDefinedQuery == 'ALL_CONSUMED_QUERY'">
+                <include refid="allConsumedQuery" />
+            </if>
+            <if test="userDefinedQuery == 'PART_REFUND_QUERY'">
+                <include refid="partRefundQuery" />
+            </if>
+        </if>
+        <!-- WARNING - 自定义查询 使用前和reeboo沟通需求 -->
+        
+        order by porder.create_time desc
+    </select>
+
+    <select id="selectOrderTotalCount" parameterType="cn.zzfyip.search.data.condition.OrderCondition"
+            resultType="int">
+        select
+        count(porder.id)
+        from b2c_order porder
+        left join b2c_v_product_summary vproduct on porder.product_id =vproduct.product_id and porder.version = vproduct.version and vproduct.p_function = 'ticket'
+        left join b2c_supplier_info supplier on porder.supplier_id = supplier.id
+        <if test="consumeStartDate != null or consumeEndDate != null">
+			left join b2c_coupon on porder.id = b2c_coupon.order_id
+		</if>
+        where porder.order_status not in (20,30)
+        <if test="supplierId != null">
+            and porder.supplier_id = #{supplierId,jdbcType=INTEGER}
+        </if>
+        <if test="userName != null">
+            and porder.user_name = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="displayIds != null">
+            and porder.display_id IN <foreach collection="displayIds" open="(" separator="," close=")" item="displayId">#{displayId}</foreach>
+        </if>
+        <if test="productName != null">
+            and vproduct.title = #{productName,jdbcType=VARCHAR}
+        </if>
+        <if test="productIds != null">
+            and vproduct.product_id in
+ 			<foreach collection="productIds" open="(" separator="," close=")" item="productIdList">
+	 			#{productIdList}
+	 		</foreach> 
+        </if>
+        <if test="contactMobile != null">
+            and porder.contact_mobile = #{contactMobile,jdbcType=VARCHAR}
+        </if>
+        <if test="contactUser != null">
+            and porder.contact_user = #{contactUser,jdbcType=VARCHAR}
+        </if>
+        <if test="createStartDate != null"> <![CDATA[AND porder.create_time >= #{createStartDate,jdbcType=DATE} ]]></if>
+		<if test="createEndDate != null"> <![CDATA[AND porder.create_time <= #{createEndDate,jdbcType=DATE} ]]></if>
+		<if test="payStartDate != null"><![CDATA[AND porder.pay_time >= #{payStartDate,jdbcType=DATE} ]]></if>
+		<if test="payEndDate != null"><![CDATA[AND porder.pay_time <= #{payEndDate,jdbcType=DATE} ]]></if>
+		<if test="consumeStartDate != null"><![CDATA[AND b2c_coupon.consume_time >= #{consumeStartDate,jdbcType=DATE} ]]></if>
+		<if test="consumeEndDate != null"><![CDATA[AND b2c_coupon.consume_time <= #{consumeEndDate,jdbcType=DATE} ]]></if>
+        <if test="orderStatus != null">
+             and porder.order_status in
+            <foreach collection="orderStatus" open="(" separator="," close=")" item="status">
+	 			#{status}
+	 		</foreach> 
+        </if>
+        <if test="refundStatus != null">
+            and porder.refund_status in
+            <foreach collection="refundStatus" open="(" separator="," close=")" item="status">
+	 			#{status}
+	 		</foreach> 
+        </if>
+        <if test="orderSource != null">
+            and order_source in
+            <foreach collection="orderSource" open="(" separator="," close=")" item="source">
+                #{source}
+            </foreach>
+        </if>
+        <if test="returnCall != null">
+            and porder.return_call = #{returnCall,jdbcType=BOOLEAN}
+        </if>
+        <if test="teamNo != null">
+            and vproduct.team_no = #{teamNo,jdbcType=VARCHAR}
+        </if>
+        <if test="shopName != null">
+            and supplier.shop_name = #{shopName,jdbcType=VARCHAR}
+        </if>
+        <if test="isNotFromTuan == true">
+	        and porder.order_source not like '%tuan%'
+	        and porder.order_source not like '%TUAN%' 
+        </if>
+    </select>
+    
+    <resultMap id="BOrderForNotice" type="cn.zzfyip.search.dal.order.entity.BOrderForNotice">
+        <id column="order_display_id" property="orderDisplayId" jdbcType="VARCHAR"/>
+        <id column="order_status" property="orderStatus" jdbcType="SMALLINT"/>
+        <id column="product_title" property="productTitle" jdbcType="VARCHAR"/>
+        <id column="order_origin" property="orderOrigin" jdbcType="VARCHAR"/>
+        <id column="order_quantity" property="orderQuantity" jdbcType="VARCHAR"/>
+        <id column="order_use_quantity" property="orderUseQuantity" jdbcType="VARCHAR"/>
+        <id column="order_left_quantity" property="orderLeftQuantity" jdbcType="VARCHAR"/>
+        <id column="order_usedate" property="orderUsedate" jdbcType="VARCHAR"/>
+        <id column="user_contact" property="userContact" jdbcType="VARCHAR"/>
+        <id column="supplier_shop_name" property="supplierShopName" jdbcType="VARCHAR"/>
+        <id column="supplier_contact1" property="supplierContact1" jdbcType="VARCHAR"/>
+        <id column="supplier_contact2" property="supplierContact2" jdbcType="VARCHAR"/>
+        <id column="supplier_mail" property="supplierEmail" jdbcType="VARCHAR"/>
+        <id column="supplier_did_status" property="supplierDidStatus" jdbcType="VARCHAR"/>
+        <id column="supplier_did_tel" property="supplierDidTel" jdbcType="VARCHAR"/>
+        <id column="supplier_nor_tel" property="supplierNorTel" jdbcType="VARCHAR"/>
+        <id column="self_templet_status" property="selfTempletStatus" jdbcType="VARCHAR"/>
+        <id column="product_self_templet" property="productSelfTemplet" jdbcType="VARCHAR"/>
+        <id column="product_need_send_sms" property="productNeedSendSms" jdbcType="VARCHAR"/>
+        <id column="order_qeticket" property="orderQeticket" jdbcType="VARCHAR"/>
+        <id column="order_refund_money" property="orderRefundMoney" jdbcType="VARCHAR"/>
+        <id column="order_refund_type" property="orderRefundType" jdbcType="VARCHAR"/>
+        <id column="touch_url" property="touchUrl" jdbcType="VARCHAR"/>
+        <id column="already_back_money" property="alreadyBackMoney" jdbcType="VARCHAR"/>
+        <id column="already_back_quantity" property="alreadyBackQuantity" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!-- 发短信邮件通知查询订单基本信息用 shawn.chang -->
+	<select id="selectOrderNoticeInfoByOrderId" resultMap="BOrderForNotice">
+<![CDATA[
+SELECT
+	od.display_id                                                                                
+	AS order_display_id,
+	od.order_status                                                                              
+	AS order_status,
+	po.title                                                                                     
+	AS product_title,
+	po.id                                                                                        
+	AS product_v_id,
+	ponow.id                                                                                     
+	AS product_id,
+	od.origin/100                                                                                
+	AS order_origin,
+	od.quantity                                                                                  
+	AS order_quantity,
+	(	SELECT
+			CASE 
+				WHEN to_char(od.takeoff_date,'YYYY-MM-DD') = '1970-01-01' 
+				THEN (	SELECT
+							'有效期为：' || display_begin_date ||'至'|| 
+							display_end_date 
+						FROM
+							b2c_v_product_ticket_price 
+						WHERE
+							version = od.version AND
+							od.product_team_id=id_main 
+				)
+				ELSE '游玩日期：'||to_char(od.takeoff_date,'YYYY-MM-DD') 
+			END 
+	)
+	AS order_usedate,
+	od.contact_mobile                                                                            
+	AS user_contact,
+	su.shop_name                                                                                 
+	AS supplier_shop_name,
+	su.notice_mobile1                                                                            
+	AS supplier_contact1,
+	su.notice_mobile2                                                                            
+	AS supplier_contact2,
+	su.notice_mail                                                                            
+	AS supplier_mail,
+	(	SELECT
+			status 
+		FROM
+			mp_func_reg 
+		WHERE
+			supplierid=od.supplier_id AND
+			funccode='DID_PHONE' LIMIT 1 
+	)
+	AS supplier_did_status,
+	(	SELECT
+			funcinfo 
+		FROM
+			mp_func_reg 
+		WHERE
+			supplierid=od.supplier_id AND
+			funccode='DID_PHONE' LIMIT 1 
+	)
+	AS supplier_did_tel,
+	(	SELECT
+			CASE 
+				WHEN CHAR_LENGTH(extension) > 0 
+				THEN telephone || '转' || extension 
+				ELSE telephone 
+			END 
+		FROM
+			supplier_telephone_working 
+		WHERE
+			supplier_id=od.supplier_id LIMIT 1 
+	)
+	AS supplier_nor_tel,
+	(	SELECT
+			status 
+		FROM
+			mp_func_reg 
+		WHERE
+			supplierid=od.supplier_id AND
+			funccode='SMS_PAY_OK' 
+	)
+	AS self_templet_status,
+	ponow.needsendsms                                                                            
+	AS product_need_send_sms,
+	ponow.smstemp                                                                                
+	AS product_self_templet,
+	co.id                                                                                        
+	AS order_qeticket,
+	od.use_quantity                                                                              
+	AS order_use_quantity,
+	(od.quantity - od.use_quantity)                                                              
+	AS order_left_quantity,
+	mt.refund_money/100                                                                              
+	AS order_refund_money,
+	mt.refund_type                                                                               
+	AS order_refund_type,
+	' http://touch.piao.zzfyip.cn/touch/order/query.htm ' AS touch_url,
+	cashBackOrder.already_back_money /100
+	As already_back_money,
+	cashBackOrder.already_back_quantity
+	As already_back_quantity
+FROM
+	b2c_order od 
+		LEFT JOIN b2c_supplier_info su 
+		ON od.supplier_id=su.id 
+			LEFT JOIN b2c_coupon co 
+			ON od.id= co.order_id 
+				LEFT JOIN b2c_v_product_summary po 
+				ON od.product_id=po.product_id AND
+				od.version=po.version 
+					LEFT JOIN b2c_product_summary ponow 
+					ON od.product_id=ponow.id 
+						LEFT JOIN b2c_money_trace mt 
+						ON od.last_refund_id=mt.id
+						    LEFT JOIN b2c_order_cash_back_info cashBackOrder
+						        ON od.id = cashBackOrder.order_id
+WHERE
+	1=1 
+	]]>
+	<if test="orderId != null">
+            and od.id=#{orderId}
+    </if>
+	<if test="displayId != null">
+            and od.display_id=#{displayId}
+    </if>
+   
+    </select> 
+    
+	<resultMap id="BOrderForDangDi" type="cn.zzfyip.search.dal.order.entity.BOrderForDangDi">
+		<id column="title" property="vProductTitle" jdbcType="VARCHAR" />
+		<id column="team_type" property="vProductTeamType" jdbcType="INTEGER" />
+		<id column="distribution_way" property="vProductDistributionWay" jdbcType="INTEGER" />
+		<id column="pay_way" property="vProductPayWay" jdbcType="INTEGER" />
+		<id column="supplier_name" property="supplierName" jdbcType="VARCHAR" />
+		<id column="shop_name" property="supplierShopName" jdbcType="VARCHAR" />
+		<id column="service_contact" property="supplierServiceContact" jdbcType="VARCHAR" />
+		<id column="pickup_time" property="pickupTime" jdbcType="VARCHAR" />
+		<id column="pickup_address" property="pickupAddress" jdbcType="VARCHAR" />
+		<id column="display_id" property="displayId" jdbcType="VARCHAR" />
+		<id column="product_id" property="productId" jdbcType="INTEGER" />
+		<id column="product_team_id" property="priceId" jdbcType="INTEGER" />
+		<id column="order_status" property="orderStatus" jdbcType="INTEGER" />
+		<id column="refund_status" property="refundStatus" jdbcType="INTEGER" />
+		<id column="order_source" property="orderSource" jdbcType="VARCHAR" />
+		<id column="contact_user" property="orderContactUser" jdbcType="VARCHAR" />
+		<id column="contact_mobile" property="orderContactMobile" jdbcType="VARCHAR" />
+		<id column="email" property="orderContactEmail" jdbcType="VARCHAR" />
+		<id column="create_time" property="orderCreateTime" jdbcType="TIMESTAMP" />
+		<id column="pay_time" property="orderPayTime" jdbcType="TIMESTAMP" />
+		<id column="origin" property="orderOrigin" jdbcType="INTEGER" />
+		<id column="refund_quantity" property="orderRefundQuantity" jdbcType="INTEGER" />
+		<id column="refund_money" property="orderRefundMoney" jdbcType="INTEGER" />
+		<id column="refund_times" property="orderRefundTimes" jdbcType="INTEGER" />
+		<id column="takeoff_date" property="orderTakeoffDate" jdbcType="TIMESTAMP" />
+		<id column="refund_result" property="orderRefundResult" jdbcType="INTEGER" />
+		<id column="pay_gateway" property="orderPayGateway" jdbcType="VARCHAR" />
+		<id column="cancel_tag" property="orderCancelTag" jdbcType="INTEGER" />
+		<id column="cancel_reason" property="orderCancelReason" jdbcType="VARCHAR" />
+        <id column="quantity" property="orderQuantity" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<select id="selectOrderForDangDiByCondition" resultMap="BOrderForDangDi" parameterType="cn.zzfyip.search.data.condition.OrderCondition">
+		SELECT
+		vproduct.title,
+		vproduct.team_type,
+		vproduct.distribution_way,
+		vproduct.pay_way,
+		supplier.supplier_name,
+		supplier.shop_name,
+		supplier.service_contact,
+		detail.pickup_time,
+		detail.pickup_address,
+		b2c_order.display_id,
+		b2c_order.product_id,
+		b2c_order.product_team_id,
+		b2c_order.order_status,
+		b2c_order.refund_status,
+		b2c_order.order_source,
+		b2c_order.contact_user,
+		b2c_order.contact_mobile,
+		b2c_order.email,
+		b2c_order.create_time,
+		b2c_order.pay_time,
+		b2c_order.origin,
+		b2c_order.refund_quantity,
+		b2c_order.refund_money,
+		b2c_order.refund_times,
+		b2c_order.takeoff_date,
+		b2c_order.refund_result,
+		b2c_order.pay_gateway,
+		b2c_order.cancel_tag,
+		b2c_order.cancel_reason,
+        b2c_order.quantity
+		from
+		b2c_order
+		join b2c_product_summary product on b2c_order.product_id = product.id
+		join b2c_v_product_summary vproduct on b2c_order.version = vproduct.version
+		and product.id = vproduct.product_id
+		join b2c_supplier_info supplier on b2c_order.supplier_id = supplier.id
+		join b2c_product_detail detail on product.id = detail.product_id
+		<where>
+			1=1 AND b2c_order.order_status not in (20,30)
+			<if test="orderSource != null">
+			    and b2c_order.order_source in 
+			    <foreach collection="orderSource" open="(" separator="," close=")" item="source">
+                	#{source}
+            	</foreach>
+			</if>
+			<if test="displayIds != null">
+			    AND b2c_order.display_id IN <foreach collection="displayIds" open="(" separator="," close=")" item="displayId">#{displayId}</foreach>
+			</if>
+			<if test="productName != null">AND vproduct.title = #{productName}</if>
+			<if test="payWay != null">AND vproduct.pay_way = #{payWay}</if>
+			<if test="productIds != null">
+			    AND b2c_order.product_id in
+			     <foreach collection="productIds" open="(" separator="," close=")" item="productIdList">
+	 				#{productIdList}
+	 			 </foreach> 
+			</if>
+			<if test="contactUser != null">AND b2c_order.contact_user = #{contactUser}</if>
+			<if test="contactMobile != null">AND b2c_order.contact_mobile = #{contactMobile}</if>
+			<if test="createStartDate != null"> <![CDATA[and b2c_order.create_time >= #{createStartDate} ]]></if>
+			<if test="createEndDate != null"> <![CDATA[and b2c_order.create_time < #{createEndDate} ]]></if>
+			<if test="payStartDate != null"><![CDATA[and b2c_order.pay_time >= #{payStartDate} ]]></if>
+			<if test="payEndDate != null"><![CDATA[and b2c_order.pay_time <= #{payEndDate} ]]></if>
+			<if test="takeOffStartDate != null"><![CDATA[and b2c_order.takeoff_date >= #{takeOffStartDate} ]]></if>
+			<if test="takeOffEndDate != null"><![CDATA[and b2c_order.takeoff_date <= #{takeOffEndDate} ]]></if>
+			<if test="orderStatus != null">
+			 	and b2c_order.order_status in
+	            <foreach item="item" index="index" collection="orderStatus" 
+	                         open="(" separator="," close=")">
+	                        #{item}
+	            </foreach>
+			</if>
+			<if test="refundStatus != null">
+				and b2c_order.refund_status in
+	            <foreach collection="refundStatus" open="(" separator="," close=")" item="status">
+		 			#{status}
+		 		</foreach> 
+			</if>
+		</where>
+		<if test="orderColumn != null">
+			ORDER BY ${orderColumn}
+			<if test="isAsc == true"> asc</if>
+			<if test="isAsc == false"> desc</if>
+		</if>
+	</select>
+	
+	
+	<resultMap id="BOrderForCallCenter" type="cn.zzfyip.search.dal.order.entity.BOrderForCallCenter">
+		<id column="display_id" property="displayId" jdbcType="VARCHAR" />
+		<id column="title" property="vProductTitle" jdbcType="VARCHAR" />
+		<id column="product_id" property="productId" jdbcType="INTEGER" />
+		<id column="pay_way" property="vProductPayWay" jdbcType="INTEGER" />
+		<id column="arrive" property="vProductArrive" jdbcType="VARCHAR" />
+		<id column="notice_mobile1" property="noticeMobile1" jdbcType="VARCHAR" />
+		<id column="notice_mobile2" property="noticeMobile2" jdbcType="VARCHAR" />
+		<id column="concat_mobile" property="supplierMobile" jdbcType="VARCHAR" />
+		<id column="contact_user" property="contactUser" jdbcType="VARCHAR" />
+		<id column="contact_mobile" property="contactMobile" jdbcType="VARCHAR" />
+		<id column="other_phone" property="contactOtherMobile" jdbcType="VARCHAR" />
+		<id column="email" property="contactEmail" jdbcType="VARCHAR" />
+		<id column="origin" property="origin" jdbcType="INTEGER" />
+		<id column="takeoff_date" property="takeoffDate" jdbcType="TIMESTAMP" />
+		<id column="user_name" property="userName" jdbcType="VARCHAR" />
+		<id column="quantity" property="quantity" jdbcType="INTEGER" />
+		<id column="supplier_id" property="supplierId" jdbcType="INTEGER" />
+		<id column="supplier_name" property="supplierName" jdbcType="VARCHAR" />
+		<id column="create_time" property="orderCreateTime" jdbcType="TIMESTAMP" />
+		<id column="pay_time" property="orderPayTime" jdbcType="TIMESTAMP" />
+		<id column="order_status" property="orderStatus" jdbcType="INTEGER" />
+		<id column="refund_status" property="refundStatus" jdbcType="INTEGER" />
+		<id column="id" property="orderId" jdbcType="INTEGER" />
+		<id column="version" property="productVersion" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<select id="selectOrderForCallCenterByCondition" resultMap="BOrderForCallCenter" parameterType="cn.zzfyip.search.data.condition.OrderCondition">
+		select
+		b2c_order.display_id,
+		b2c_v_product_summary.title,
+		b2c_v_product_summary.product_id,
+		b2c_v_product_summary.pay_way,
+		b2c_v_product_summary.arrive,
+		b2c_supplier_info.supplier_name,
+		b2c_supplier_info.concat_mobile,
+		b2c_supplier_info.notice_mobile1,
+		b2c_supplier_info.notice_mobile2,
+		b2c_order.quantity,
+		b2c_order.supplier_id,
+		b2c_order.create_time,
+		b2c_order.contact_user,
+		b2c_order.other_phone,
+		b2c_order.contact_mobile,
+		b2c_order.email,
+		b2c_order.origin,
+		b2c_order.takeoff_date,
+		b2c_order.pay_time,
+		b2c_order.user_name,
+		b2c_order.order_status,
+		b2c_order.refund_status,
+		b2c_order.id,
+		b2c_order.version
+		from b2c_order
+		left join b2c_v_product_summary on b2c_order.product_id = b2c_v_product_summary.product_id and
+		b2c_order.version = b2c_v_product_summary.version
+		left join b2c_supplier_info on b2c_order.supplier_id = b2c_supplier_info.id
+		<where>
+			1=1 AND b2c_order.order_status not in (20,30) and b2c_v_product_summary.p_function = 'ticket'
+			<if test="contactMobile != null">AND b2c_order.contact_mobile = #{contactMobile}</if>
+			<if test="orderStatus != null">
+			 and b2c_order.order_status in
+	            <foreach item="item" index="index" collection="orderStatus" 
+	                         open="(" separator="," close=")">
+	                        #{item}
+	            </foreach>
+			</if>
+			<if test="createStartDate != null"> <![CDATA[and b2c_order.create_time >= #{createStartDate} ]]></if>
+			<if test="createEndDate != null"> <![CDATA[and b2c_order.create_time < #{createEndDate} ]]></if>
+		</where>
+		<if test="orderColumn != null">
+			ORDER BY ${orderColumn}
+			<if test="isAsc == true"> asc</if>
+			<if test="isAsc == false"> desc</if>
+		</if>
+	</select>
+	
+	<resultMap id="BOrderForTicket" type="cn.zzfyip.search.dal.order.entity.BOrderForTicket">
+		<id column="id" property="orderId" jdbcType="INTEGER" />
+		<id column="product_team_id" property="priceId" jdbcType="INTEGER" />
+		<id column="display_id" property="displayId" jdbcType="VARCHAR" />
+		<id column="title" property="productName" jdbcType="VARCHAR" />
+		<id column="supplier_id" property="supplierId" jdbcType="INTEGER" />
+		<id column="product_id" property="productId" jdbcType="VARCHAR" />
+		<id column="profit" property="profit" jdbcType="NUMERIC" />
+		<id column="trans_type" property="transType" jdbcType="SMALLINT" />
+		<id column="settle_type" property="settleType" jdbcType="SMALLINT" />
+		<id column="order_source" property="orderSource" jdbcType="VARCHAR" />
+		<id column="contact_user" property="contactUser" jdbcType="VARCHAR" />
+		<id column="user_message" property="userMessage" jdbcType="VARCHAR" />
+		<id column="email" property="contactEmail" jdbcType="VARCHAR" />
+		<id column="contact_mobile" property="contactMobile" jdbcType="VARCHAR" />
+		<id column="balance_info" property="balanceInfo" jdbcType="OTHER" />
+		<id column="sub_product_count" property="subProductCount" jdbcType="OTHER" />
+		<id column="order_status" property="orderStatus" jdbcType="SMALLINT" />
+		<id column="refund_status" property="refundStatus" jdbcType="INTEGER" />
+		<id column="quantity" property="quantity" jdbcType="INTEGER" />
+		<id column="use_quantity" property="useQuantity" jdbcType="INTEGER" />
+		<id column="refund_quantity" property="refundQuantity" jdbcType="INTEGER" />
+		<id column="origin" property="origin" jdbcType="BIGINT" />
+		<id column="money" property="money" jdbcType="BIGINT" />
+		<id column="user_name" property="userName" jdbcType="VARCHAR" />
+		<id column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<id column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+		<id column="version" property="version" jdbcType="INTEGER" />
+		<id column="retain_money" property="retainMoney" jdbcType="BIGINT" />
+		<id column="team_type" property="teamType" jdbcType="INTEGER" />
+		<id column="vproduct_id" property="vProductId" jdbcType="INTEGER" />
+		<id column="order_usedate" property="orderUserDate" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectOrderForTicketByCondition" resultMap="BOrderForTicket" parameterType="cn.zzfyip.search.data.condition.OrderCondition">
+		select 
+		b2c_order.id,
+		b2c_order.product_team_id,
+		b2c_order.display_id,
+		b2c_order.supplier_id,
+		b2c_order.product_id,
+		b2c_order.profit,
+		b2c_order.trans_type,
+		b2c_order.settle_type,
+		b2c_order.order_source,
+		b2c_order.contact_user,
+		b2c_order.user_message,
+		b2c_order.email,
+		b2c_order.contact_mobile,
+		b2c_order.balance_info,
+		b2c_order.sub_product_count,
+		b2c_order.order_status,
+		b2c_order.refund_status,
+		b2c_order.quantity,
+		b2c_order.use_quantity,
+		b2c_order.refund_quantity,
+		b2c_order.refund_status,
+		b2c_order.origin,
+		b2c_order.money,
+		b2c_order.user_name,
+		b2c_order.create_time,
+		b2c_order.pay_time,
+		b2c_order.retain_money,
+		b2c_order.version,
+		(SELECT
+			CASE 
+				WHEN b2c_v_product_summary.team_type = 1 
+				THEN (	SELECT
+							display_begin_date ||'#'|| 
+							display_end_date 
+						FROM
+							b2c_v_product_ticket_price 
+						WHERE
+							version = b2c_order.version AND
+							b2c_order.product_team_id=id_main limit 1 
+				)
+				ELSE to_char(b2c_order.takeoff_date,'YYYY-MM-DD') 
+			END 
+		)
+		AS order_usedate,
+		b2c_v_product_summary.title,
+		b2c_v_product_summary.id as vproduct_id,
+		b2c_v_product_summary.team_type
+		from b2c_order 
+		left join b2c_v_product_summary on b2c_order.product_id = b2c_v_product_summary.product_id and b2c_order.version = b2c_v_product_summary.version
+		<where>
+			1=1 AND b2c_order.order_status not in (20,30)
+		    <if test="displayIds != null">
+			    AND b2c_order.display_id IN <foreach collection="displayIds" open="(" separator="," close=")" item="displayId">#{displayId}</foreach>
+			</if>
+			<if test="orderSource != null">
+			 	and b2c_order.order_source in
+	            <foreach item="item" index="index" collection="orderSource" open="(" separator="," close=")">
+	                 #{item}
+	            </foreach>
+			</if>
+		    <if test="userName != null">AND b2c_order.user_name = #{userName}</if>
+		    <if test="contactUser != null">AND b2c_order.contact_user = #{contactUser}</if>
+			<if test="contactMobile != null">AND b2c_order.contact_mobile = #{contactMobile}</if>
+			<if test="orderStatus == null">
+			 	and b2c_order.order_status != 20
+			</if>
+			<if test="orderStatus != null">
+			 	and b2c_order.order_status in
+	            <foreach item="item" index="index" collection="orderStatus" 
+	                         open="(" separator="," close=")">
+	                        #{item}
+	            </foreach>
+			</if>
+			<if test="refundStatus != null">
+			 and b2c_order.refund_status in
+	            <foreach item="item" index="index" collection="refundStatus" 
+	                         open="(" separator="," close=")">
+	                        #{item}
+	            </foreach>
+			</if>
+		</where>
+		<if test="orderColumn != null">
+			ORDER BY ${orderColumn}
+			<if test="isAsc == true"> asc</if>
+			<if test="isAsc == false"> desc</if>
+		</if>
+	</select>
+	
+	<select id="selectListOrderNotAppraised" resultMap="findOrderListByQueryMap" parameterType="cn.zzfyip.search.data.condition.OrderCondition">
+		SELECT
+			o.id as orderId
+			o.display_id
+		FROM
+			b2c_order o
+			left join b2c_order_appraise oa on oa.order_id = o.id
+		WHERE
+			o.display_id IN <foreach collection="displayIds" open="(" separator="," close=")" item="displayId">#{displayId}</foreach>
+	</select>
+	
+	<select id="selectListOrderPassengerByDisplayId"
+		resultMap="cn.zzfyip.search.dal.order.mapper.OrderPassengerMapper.BaseResultMap">
+	select
+		p.id, p.order_id, p.name, p.gender, p.is_adult, p.id_type, p.id_no, p.birthday,
+		p.country, p.id_valid_date, p.status, p.operator, p.operate_time, p.canceled
+	from
+		public.b2c_order o inner join public.b2c_order_passenger p on o.id=p.order_id
+	where
+		o.display_id = #{displayId,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- WARNING - 自定义查询语句 开始 -->
+
+	<!-- 用户查询订单列表页用-交易成功 -->
+	<sql id="userOrderSuccessQuery">
+	    <![CDATA[
+	        and porder.refund_status = 20
+			and (porder.order_status = 26 or porder.order_status = 33)
+	        and porder.use_quantity = 0
+		]]>
+	</sql>
+	
+	<!-- 用户查询订单列表页用-已消费 -->
+	<sql id="userOrderConsumedQuery">
+	    <![CDATA[
+	      	and porder.refund_status = 20
+			and (porder.order_status = 26 or porder.order_status = 33)
+	        and porder.use_quantity > 0
+        ]]>
+	</sql>
+
+    <!-- 部分消费查询条件 -->
+    <sql id="partConsumedQuery">
+        <![CDATA[
+	      	and use_quantity > 0 and use_quantity < quantity
+        ]]>
+    </sql>
+
+    <!-- 全部消费查询条件 -->
+    <sql id="allConsumedQuery">
+        <![CDATA[
+	      	and use_quantity = quantity
+        ]]>
+    </sql>
+
+    <!-- 部分退款查询条件 -->
+    <sql id="partRefundQuery">
+        <![CDATA[
+	      	and (money != 0 or retain_money != 0)
+        ]]>
+    </sql>
+	<!-- WARNING - 自定义查询语句 结束 -->
+
+	
+</mapper>

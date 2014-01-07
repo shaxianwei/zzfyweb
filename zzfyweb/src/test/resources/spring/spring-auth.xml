@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans         
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd        
+	http://www.springframework.org/schema/mvc         
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd        
+	http://www.springframework.org/schema/context         
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd        
+	http://www.springframework.org/schema/tx        
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd      
+	http://www.springframework.org/schema/aop      
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+	default-autowire="byName">
+
+	<description>权限配置</description>
+
+	<!-- <bean id="securityInterceptor" class="cn.zzfyip.search.common.auth.interceptor.SecurityInterceptor">
+		<property name="regExpURLAnalyze">
+			<bean class="cn.zzfyip.search.common.auth.RegExpURLAnalyze">
+
+				===============================================================
+				匿名用户权限URL配置，任何人都可以访问，不需要在其他角色中配置重复的URL
+				===============================================================
+				<property name="anonymous">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /
+							    /anonymous/.*
+								/api/.*
+								/website/order/fillInfo.*
+								/startCheck
+							    /error
+							    /notfound
+							    /order/list
+							</value>
+						</property>
+					</bean>
+				</property>
+
+				=======================================
+				通过手机验证码查询订单的用户权限URL
+				=======================================
+				<property name="token">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+								/website/order/payResult.*
+								/token/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+				
+				===============================================================
+				普通用户权限URL配置，只要登录就可以访问，不需要在更高级角色中配置重复的URL
+				===============================================================
+				<property name="general">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+								/website/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+
+				=======================================
+				供应商管理员权限URL配置
+				=======================================
+				<property name="supplier">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /home
+								/supplier/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+				
+				=======================================
+				供应商：景区订单管理员 权限URL配置
+				=======================================
+				<property name="scenicOrder">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /home
+								/scenicOrder/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+				
+				=======================================
+				供应商：景区代理商 权限URL配置
+				=======================================
+				<property name="scenicAgent">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /home
+								/scenicAgent/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+				
+				=======================================
+				供应商：景区资讯 权限URL配置
+				=======================================
+				<property name="scenicInfo">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /home
+								/scenicInfo/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+
+				=======================================
+				QunarCallCenter权限URL配置
+				=======================================
+				<property name="callCenter">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /home
+								/callcenter/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+				
+				=======================================
+				Qunar管理员权限URL配置
+				=======================================
+				<property name="admin">
+					<bean class="cn.zzfyip.search.common.auth.AuthorizeProtected">
+						<property name="urlProtected">
+							<value>
+							    /home
+								/admin/.*
+							</value>
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean> -->
+
+	<!-- 定义属性编辑器 -->
+	<bean id="customEditorConfigurer"
+		class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="cn.zzfyip.search.common.auth.url.URLPatternHolder">
+					<bean class="cn.zzfyip.search.common.auth.url.URLProtectedEditor" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

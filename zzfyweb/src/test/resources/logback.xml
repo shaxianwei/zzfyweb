@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	
+	<!-- ======================================= -->
+	<!-- 控制台输出日志 -->
+	<!-- ======================================= -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %C{56} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+    <!-- ======================================= -->
+	<!-- 所有日志					                 -->
+	<!-- ======================================= -->
+    <appender name="ZZFYWEB_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>/web_data/zzfyweb/logs/zzfyweb_all.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/web_data/zzfyweb/logs/ZZFYWEB/ZZFYWEB_all-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+			<maxHistory>180</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %C{56} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<root level="INFO">
+	    <appender-ref ref="STDOUT" />
+		<appender-ref ref="ZZFYWEB_ALL" />
+	</root>
+	
+	<!-- ======================================= -->
+	<!-- 订单日志									 -->
+	<!-- ======================================= -->
+	<!-- <appender name="ZZFYWEB_ORDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>/home/q/www/ZZFYWEB2.piao.zzfyip.cn/logs/ZZFYWEB_order.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/home/q/www/ZZFYWEB2.piao.zzfyip.cn/logs/ZZFYWEB/ZZFYWEB_order-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+			<maxHistory>180</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %C{56} - %msg%n</pattern>
+		</encoder>
+	</appender> -->
+    
+    <!-- ======================================= -->
+	<!-- 订单日志									 -->
+	<!-- ======================================= -->
+	<!-- <logger name="ZZFYWEB_ORDER">
+    	<appender-ref ref="ZZFYWEB_ORDER" />
+    </logger> -->
+
+</configuration>

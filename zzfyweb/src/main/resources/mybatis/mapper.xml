@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE configuration PUBLIC "-//ibatis.apache.org//DTD Config 3.0//EN"  
+"http://ibatis.apache.org/dtd/ibatis-3-config.dtd">
+
+<configuration>
+
+	<typeHandlers>
+		<typeHandler handler="cn.zzfyip.search.common.database.typehandler.impl.PGHStoreTypeHandler"
+			javaType="cn.zzfyip.search.common.support.PGHStore" />
+	</typeHandlers>
+
+	<plugins>
+		<plugin
+			interceptor="cn.zzfyip.search.common.paginator.interceptor.OffsetLimitInterceptor">
+			<property name="dialect"
+				value="cn.zzfyip.search.common.paginator.dialect.db.PostgreSQLDialect" />
+		</plugin>
+	</plugins>
+
+	<mappers>
+		<!-- common mapper -->
+		<mapper resource="mybatis/AddPatentRecordMapper.xml" />
+		<mapper resource="mybatis/PatentMainMapper.xml" />
+		<mapper resource="mybatis/PatentInfoMapper.xml" />
+		<mapper resource="mybatis/PatentNoticeFawenMapper.xml" />
+		<mapper resource="mybatis/PatentFeeMapper.xml" />
+		
+		<!-- business dao -->
+		<mapper resource="mybatis/BusinessPatentMapper.xml" />
+		
+	</mappers>
+
+</configuration>
+
