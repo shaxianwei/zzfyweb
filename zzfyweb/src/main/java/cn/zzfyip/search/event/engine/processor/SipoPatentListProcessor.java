@@ -46,7 +46,10 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 		paramMap.put("selectbase", addPatentRecord.getPatentType() + "");
 
 		String response = HttpClientUtils.post(SIPO_SEARCH_ADDRESS, paramMap,"GBK");
-//		logger.info("response = {}", response);
+		if(StringUtils.isBlank(response)){
+			throw new PatentNoLoadHttpWrongException();
+		}
+		//		logger.info("response = {}", response);
 		List<PatentMain> patentList = new ArrayList<PatentMain>();
 		String[] responseArrays = response.split("<tr onMouseOver=");
 		for(String responsePart:responseArrays){
