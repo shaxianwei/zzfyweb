@@ -6,7 +6,6 @@
 package cn.zzfyip.search.service.task;
 
 /**
- * 实现描述：TODO 类描述待完成
  * 
  * @author simon
  * @version v1.0.0

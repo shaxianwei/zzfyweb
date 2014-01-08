@@ -17,7 +17,6 @@ import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 
 /**
- * 实现描述：TODO 类描述待完成
  * 
  * @author chaoyi.he
  * @version v1.0.0

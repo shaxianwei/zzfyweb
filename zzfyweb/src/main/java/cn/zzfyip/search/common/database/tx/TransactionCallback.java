@@ -8,7 +8,6 @@ package cn.zzfyip.search.common.database.tx;
 import cn.zzfyip.search.common.exception.BusinessException;
 
 /**
- * 实现描述：TODO 类描述待完成
  * 
  * @author chaoyi.he
  * @version v1.0.0

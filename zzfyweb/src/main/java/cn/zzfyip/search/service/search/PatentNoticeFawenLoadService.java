@@ -18,6 +18,7 @@ import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.event.engine.PatentInfoLoader;
+import cn.zzfyip.search.event.engine.PatentNoticeFawenLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
 
 @Service
@@ -52,8 +53,8 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	    while(list.size()!=0){
 	        logger.info("执行专利项发文通知检索服务，本分页执行开始。 ");
 	        for(PatentMain patentMain:list){
-	            PatentInfoLoader patentInfoLoader = new PatentInfoLoader(patentMain,patentNoticeFawenExecutor);
-	            patentNoticeFawenExecutor.execute(patentInfoLoader);
+	            PatentNoticeFawenLoader patentNoticeFawenLoader = new PatentNoticeFawenLoader(patentMain,patentNoticeFawenExecutor,fawenUpdateDate);
+	            patentNoticeFawenExecutor.execute(patentNoticeFawenLoader);
 	        }
 	        while(((ThreadPoolExecutor)patentNoticeFawenExecutor).getActiveCount()>0){
 	            try {

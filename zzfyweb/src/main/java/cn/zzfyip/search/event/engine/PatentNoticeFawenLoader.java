@@ -1,5 +1,6 @@
 package cn.zzfyip.search.event.engine;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -23,14 +24,17 @@ public class PatentNoticeFawenLoader implements Runnable{
     
     private ExecutorService patentNoticeFawenExecutor;
     
+    private Date fawenUpdateDate; 
+    
     private IPatentNoticeFawenProcessor patentNoticeFawenProcessor;
     
     private PatentDao patentDao;
     
     
-    public PatentNoticeFawenLoader(PatentMain patentMain, ExecutorService patentNoticeFawenExecutor) {
+    public PatentNoticeFawenLoader(PatentMain patentMain, ExecutorService patentNoticeFawenExecutor,Date fawenUpdateDate) {
         this.patentMain = patentMain;
         this.patentNoticeFawenExecutor = patentNoticeFawenExecutor;
+        this.fawenUpdateDate = fawenUpdateDate;
         this.patentNoticeFawenProcessor = SpringContextUtils.getBean(SipoPatentNoticeFawenProcessor.class);
         this.patentDao = SpringContextUtils.getBean(PatentDao.class);
     }
@@ -43,6 +47,7 @@ public class PatentNoticeFawenLoader implements Runnable{
         try {
             list = patentNoticeFawenProcessor.processPatentNoticeFawen(patentMain);
             patentDao.refreshPatentNoticeFawenByPatentNo(patentMain.getPatentNo(),list);
+            
         } catch (PatentNoLoadHttpWrongException e) {
             logger.info("执行专利项发文通知检索线程出错，结束线程池并睡眠120秒，参数"+JsonUtils.marshalToString(patentMain));
             try {
@@ -56,6 +61,19 @@ public class PatentNoticeFawenLoader implements Runnable{
         
         logger.info("结束执行专利项发文通知检索线程，PatentMain={}，PatentInfo={}",JsonUtils.marshalToString(patentMain),JsonUtils.marshalToString(list));
                 
+    }
+    
+    /**
+     * 通过Info的信息更新 patentMain，为其他检索提供配置信息
+     * @param patentMain
+     * @param patentInfo
+     */
+    private void updatePatentMainFawenStatus(PatentMain patentMain,List<PatentNoticeFawen> fawenList){
+        
+        patentMain.setPatentFawenSearchTime(fawenUpdateDate);
+        //TODO:根据规则进行发文情况的检查，对符合规则的产品，将其主patent的发文状态置成成功。针对专利权终止的，进行patent发文状态改成不检索。
+        
+        patentDao.updatePatentMain(patentMain);
     }
 
 

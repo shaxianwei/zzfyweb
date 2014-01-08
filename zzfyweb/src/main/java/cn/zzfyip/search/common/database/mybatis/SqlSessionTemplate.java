@@ -8,7 +8,6 @@ package cn.zzfyip.search.common.database.mybatis;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 /**
- * 实现描述：TODO 类描述待完成
  * 
  * @author chaoyi.he
  * @version v1.0.0

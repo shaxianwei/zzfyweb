@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import cn.zzfyip.search.common.paginator.dialect.Dialect;
 
 /**
- * 实现描述：TODO 类描述待完成
  * 
  * @author simon
  * @version v1.0.0

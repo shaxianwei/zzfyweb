@@ -24,7 +24,6 @@ public class SipoPatentInfoProcessorTest extends BaseTest {
         try {
             patentInfo = patentInfoProcessor.processPatentInfo(patentMain);
         } catch (PatentNoLoadHttpWrongException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 		Assert.assertEquals(patentInfo.getPatentName(), "苗移植机");

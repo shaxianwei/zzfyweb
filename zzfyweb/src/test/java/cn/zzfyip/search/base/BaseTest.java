@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  * <pre>
  * 实现了bean的全局 lazy init
- * TODO: 需要实现 properties placeholder 的 lazy parser 功能
  * </pre>
  * 
  * @author simon

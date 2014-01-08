@@ -33,7 +33,6 @@ public class SipoPatentListProcessorTest extends BaseTest {
 		try {
 			list = patentListProcessor.processPatentList(addPatentRecord);
 		} catch (PatentNoLoadHttpWrongException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Assert.assertEquals(list.size(), globalConstant.getNumPerPage().intValue());
