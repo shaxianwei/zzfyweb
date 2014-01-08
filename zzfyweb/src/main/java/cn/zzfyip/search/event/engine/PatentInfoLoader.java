@@ -51,7 +51,7 @@ public class PatentInfoLoader implements Runnable{
         } catch (PatentNoLoadHttpWrongException e) {
             logger.info("执行专利项信息检索线程出错，结束线程池并睡眠120秒，参数"+JsonUtils.marshalToString(patentMain));
             try {
-                patentInfoExecutor.awaitTermination(120, TimeUnit.MINUTES);
+                patentInfoExecutor.awaitTermination(120, TimeUnit.SECONDS);
             } catch (InterruptedException e1) {
                 logger.error("执行专利项信息检索线程出错，睡眠120秒被打断",e);
             }

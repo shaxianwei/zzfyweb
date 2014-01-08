@@ -35,6 +35,9 @@ public class GlobalConstant {
     
     @Value("${num.per.page}")
     private Integer numPerPage;
+    
+    @Value("${thread.patentInfoThreadNum}")
+    private Integer patentInfoThreadNum;
 
 	public String getDbJdbcurl() {
 		return dbJdbcurl;
@@ -75,6 +78,13 @@ public class GlobalConstant {
 	public void setNumPerPage(Integer numPerPage) {
 		this.numPerPage = numPerPage;
 	}
-	
+
+    public Integer getPatentInfoThreadNum() {
+        return patentInfoThreadNum;
+    }
+
+    public void setPatentInfoThreadNum(Integer patentInfoThreadNum) {
+        this.patentInfoThreadNum = patentInfoThreadNum;
+    }
     
 }

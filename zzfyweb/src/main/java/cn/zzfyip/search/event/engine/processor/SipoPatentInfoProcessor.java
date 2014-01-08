@@ -44,7 +44,7 @@ public class SipoPatentInfoProcessor implements IPatentInfoProcessor {
 		String mainCategoryNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*主 &nbsp;分 &nbsp;类 &nbsp;号： </td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,30})</td>.*", response, 1));
 		String preApplyNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*分案原申请号：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String secCategoryNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*分&nbsp;&nbsp;&nbsp; 类&nbsp; &nbsp;&nbsp;号： </td>\r\n    <td colspan=\"3\" class=\"kuang2\">&nbsp;(.{0,30})</td>.*", response, 1));
-		String certificateDateString = StringUtils.trimToNull(PatternUtils.getMatchString(".*颁&nbsp;&nbsp;&nbsp;证&nbsp; &nbsp;&nbsp;&nbsp;日： </td>\r\n    <td class=\"kuang2\">(.{0,20})</td>.*", response, 1));
+		String certificateDateString = StringUtils.trimToNull(PatternUtils.getMatchString(".*颁&nbsp;&nbsp;&nbsp;证&nbsp; &nbsp;&nbsp;&nbsp;日： </td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String preRight = StringUtils.trimToNull(PatternUtils.getMatchString(".*优&nbsp;&nbsp;&nbsp;先&nbsp;&nbsp;&nbsp;权：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,30})</td>.*", response, 1));
 		String applier = StringUtils.trimToNull(PatternUtils.getMatchString(".*申请\\(专利权\\)人： </td>\r\n    <td colspan=\"3\" class=\"kuang2\">&nbsp;(.{0,50})</td>.*", response, 1));
 		String address = StringUtils.trimToNull(PatternUtils.getMatchString(".*地 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：</td>\r\n    <td colspan=\"3\" class=\"kuang2\">&nbsp;(.{0,50})</td>.*", response, 1));

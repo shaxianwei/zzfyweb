@@ -53,7 +53,7 @@ public class PatentNoLoader implements Runnable{
 		} catch (PatentNoLoadHttpWrongException e) {
 			logger.info("执行专利项检索插入线程检索出错，结束线程池并睡眠120秒，参数"+JsonUtils.marshalToString(addPatentRecord));
 			try {
-				addPatentExecutor.awaitTermination(120, TimeUnit.MINUTES);
+				addPatentExecutor.awaitTermination(120, TimeUnit.SECONDS);
 			} catch (InterruptedException e1) {
 				logger.error("执行专利项检索插入线程检索出错，睡眠120秒被打断",e);
 			}

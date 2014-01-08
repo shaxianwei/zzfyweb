@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.zzfyip.search.common.support.StandardJsonObject;
+import cn.zzfyip.search.service.search.PatentInfoLoadService;
 import cn.zzfyip.search.service.search.PatentNoLoadService;
 import cn.zzfyip.search.utils.DateUtils;
 
@@ -33,6 +34,9 @@ public class ToolboxController {
 	@Autowired
 	PatentNoLoadService patentNoLoadService;
 	
+	@Autowired
+	PatentInfoLoadService patentInfoLoadService;
+	
     @ResponseBody
     @RequestMapping(params = "method=createAddPatentRecord", method = { RequestMethod.GET })
     public StandardJsonObject createAddPatentRecord()
@@ -49,12 +53,21 @@ public class ToolboxController {
     	patentNoLoadService.createAddPatentRecordByBeginDateAndEndDate(beginDate,endDate);
     	return StandardJsonObject.newCorrectJsonObject();
     }
+    
     @ResponseBody
     @RequestMapping(params = "method=addUnsearchedPatentRecordToPatentMain", method = { RequestMethod.GET })
     public StandardJsonObject addUnsearchedPatentRecordToPatentMain()
     		throws Exception {
     	patentNoLoadService.addUnsearchedPatentRecordToPatentMain();
     	return StandardJsonObject.newCorrectJsonObject();
+    }
+    
+    @ResponseBody
+    @RequestMapping(params = "method=searchPatentInfo", method = { RequestMethod.GET })
+    public StandardJsonObject searchPatentInfo()
+            throws Exception {
+        patentInfoLoadService.searchPatentInfo();
+        return StandardJsonObject.newCorrectJsonObject();
     }
 
 }

@@ -58,6 +58,10 @@ public class PatentDao {
 		return patentMainMapper.selectByPrimaryKey(patentNo);
 	}
 	
+	public List<PatentMain> selectFirst100RecordNoInfoPatentMain(){
+	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordNoInfoPatentMain");
+	}
+	
 	public void insertPatentInfo(PatentInfo record){
 	    patentInfoMapper.insertSelective(record);
     }
@@ -65,4 +69,5 @@ public class PatentDao {
 	public PatentInfo selectPatentInfoByPatentNo(String patentNo){
 	    return patentInfoMapper.selectByPrimaryKey(patentNo);
 	}
+	
 }
