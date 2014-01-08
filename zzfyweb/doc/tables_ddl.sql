@@ -116,6 +116,15 @@ WITH (
 ALTER TABLE patent_main
   OWNER TO changsure;
 
+ALTER TABLE "public"."patent_main"
+	ADD COLUMN "patent_fawen_search_type" varchar(25) NULL
+GO
+
+ALTER TABLE "public"."patent_main"
+	ADD COLUMN "patent_fawen_search_time" timestamp NULL
+GO
+
+
 -- Index: index_patent_main_patent_type
 
 -- DROP INDEX index_patent_main_patent_type;

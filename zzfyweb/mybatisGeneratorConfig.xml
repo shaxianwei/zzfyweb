@@ -2,7 +2,7 @@
 <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration>
 	<classPathEntry
-		location="D:/Program Files (x86)/Aqua Data Studio 7.5 - 32bit/lib/drivers/postgresql.jar" />
+		location="E:/develop/Aqua Data Studio 7.5 - 32bit/lib/drivers/postgresql.jar" />
 	<context id="zzfyweb">
 		<jdbcConnection driverClass="org.postgresql.Driver"
 			connectionURL="jdbc:postgresql://localhost:5432/zzfysearch"

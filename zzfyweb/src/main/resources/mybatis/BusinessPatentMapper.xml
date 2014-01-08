@@ -17,7 +17,11 @@
 		max(public_date) as max_public_date from add_patent_record;
 	</select>
 
-	<select id="selectFirst100RecordNoInfoPatentMain" resultMap="BaseResultMap">
+	<select id="selectFirst100RecordPatentInfoSearchPatentMain" resultMap="BaseResultMap">
+		SELECT * FROM public.patent_main where patent_no not in (select patent_no from patent_info) order by patent_type,public_date limit 100;
+	</select>
+	
+	<select id="selectFirst100RecordPatentNoticeFawenSearchPatentMain" resultMap="BaseResultMap">
 		SELECT * FROM public.patent_main where patent_no not in (select patent_no from patent_info) order by patent_type,public_date limit 100;
 	</select>
 

@@ -43,7 +43,7 @@ public class PatentInfoLoadService implements InitializingBean{
 	
 	public void searchPatentInfo(){
 	    logger.info("---------------------开始执行专利项信息检索服务-------------------");
-	    List<PatentMain> list = patentDao.selectFirst100RecordNoInfoPatentMain();
+	    List<PatentMain> list = patentDao.selectFirst100RecordPatentInfoSearchPatentMain();
 	    
 	    while(list.size()!=0){
 	        logger.info("执行专利项信息检索服务，本分页执行开始。 ");
@@ -60,7 +60,7 @@ public class PatentInfoLoadService implements InitializingBean{
                 }
 	        }
 	        logger.info("执行专利项信息检索服务，本分页执行完成。 ");
-	        list = patentDao.selectFirst100RecordNoInfoPatentMain();
+	        list = patentDao.selectFirst100RecordPatentInfoSearchPatentMain();
 	    }
 	    logger.info("---------------------完成执行专利项信息检索服务-------------------");
 	    	    

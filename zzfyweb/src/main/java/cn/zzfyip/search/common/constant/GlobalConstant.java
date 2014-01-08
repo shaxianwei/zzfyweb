@@ -38,6 +38,12 @@ public class GlobalConstant {
     
     @Value("${thread.patentInfoThreadNum}")
     private Integer patentInfoThreadNum;
+    
+    @Value("${thread.patentNoticeFawenThreadNum}")
+    private Integer patentNoticeFawenThreadNum;
+    
+    @Value("${patent.fawen.filterWords}")
+    private String fawenFilterWords;
 
 	public String getDbJdbcurl() {
 		return dbJdbcurl;
@@ -85,6 +91,22 @@ public class GlobalConstant {
 
     public void setPatentInfoThreadNum(Integer patentInfoThreadNum) {
         this.patentInfoThreadNum = patentInfoThreadNum;
+    }
+
+    public Integer getPatentNoticeFawenThreadNum() {
+        return patentNoticeFawenThreadNum;
+    }
+
+    public void setPatentNoticeFawenThreadNum(Integer patentNoticeFawenThreadNum) {
+        this.patentNoticeFawenThreadNum = patentNoticeFawenThreadNum;
+    }
+
+    public String getFawenFilterWords() {
+        return fawenFilterWords;
+    }
+
+    public void setFawenFilterWords(String fawenFilterWords) {
+        this.fawenFilterWords = fawenFilterWords;
     }
     
 }

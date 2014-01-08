@@ -6,14 +6,18 @@ import java.util.List;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecordExample;
 import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
+import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
+import cn.zzfyip.search.dal.common.entity.PatentNoticeFawenExample;
 import cn.zzfyip.search.dal.common.mapper.AddPatentRecordMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentInfoMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentMainMapper;
+import cn.zzfyip.search.dal.common.mapper.PatentNoticeFawenMapper;
 
 @Repository
 public class PatentDao {
@@ -29,6 +33,9 @@ public class PatentDao {
 	
 	@Autowired
 	PatentInfoMapper patentInfoMapper;
+	
+	@Autowired
+	PatentNoticeFawenMapper patentNoticeFawenMapper;
 	
 	public Date selectMaxPublicDateInPatentMain(){
 		Date maxPublicDate = sqlSession.selectOne("cn.zzfyip.search.dal.common.dao.PatentDao.selectMaxPublicDateInPatentMain");
@@ -54,12 +61,16 @@ public class PatentDao {
 		patentMainMapper.insertSelective(record);
 	}
 	
+	public void updatePatentMain(PatentMain record){
+	    patentMainMapper.updateByPrimaryKeySelective(record);
+	}
+	
 	public PatentMain selectPatentMainByPatentNo(String patentNo){
 		return patentMainMapper.selectByPrimaryKey(patentNo);
 	}
 	
-	public List<PatentMain> selectFirst100RecordNoInfoPatentMain(){
-	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordNoInfoPatentMain");
+	public List<PatentMain> selectFirst100RecordPatentInfoSearchPatentMain(){
+	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentInfoSearchPatentMain");
 	}
 	
 	public void insertPatentInfo(PatentInfo record){
@@ -69,5 +80,20 @@ public class PatentDao {
 	public PatentInfo selectPatentInfoByPatentNo(String patentNo){
 	    return patentInfoMapper.selectByPrimaryKey(patentNo);
 	}
+	
+	@Transactional
+	public void refreshPatentNoticeFawenByPatentNo(String patentNo,List<PatentNoticeFawen> list){
+	    PatentNoticeFawenExample example = new PatentNoticeFawenExample();
+	    example.createCriteria().andPatentNoEqualTo(patentNo);
+	    patentNoticeFawenMapper.deleteByExample(example);
+	    
+	    for(PatentNoticeFawen record:list){
+	        patentNoticeFawenMapper.insertSelective(record);
+	    }
+	}
+	
+	public List<PatentMain> selectFirst100RecordPatentNoticeFawenSearchPatentMain(){
+        return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain");
+    }
 	
 }
