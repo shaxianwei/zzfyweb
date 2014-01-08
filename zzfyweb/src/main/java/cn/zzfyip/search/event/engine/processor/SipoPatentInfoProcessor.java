@@ -30,7 +30,7 @@ public class SipoPatentInfoProcessor implements IPatentInfoProcessor {
 		
 		String patentName = StringUtils.trimToNull(PatternUtils.getMatchString(".*名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称： </td>\r\n    <td colspan=\"3\" class=\"kuang2\">&nbsp;(.{0,50})</td>.*", response, 1));
 		String applyDateString = StringUtils.trimToNull(PatternUtils.getMatchString(".*申&nbsp; &nbsp;请&nbsp;&nbsp; 日：\r\n    </td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
-		String publicNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*公&nbsp;开&nbsp;(公告)&nbsp;号：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
+		String publicNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*公&nbsp;开&nbsp;\\(公告\\)&nbsp;号：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String mainCategoryNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*主 &nbsp;分 &nbsp;类 &nbsp;号： </td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,30})</td>.*", response, 1));
 		String preApplyNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*分案原申请号：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String secCategoryNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*分&nbsp;&nbsp;&nbsp; 类&nbsp; &nbsp;&nbsp;号： </td>\r\n    <td colspan=\"3\" class=\"kuang2\">&nbsp;(.{0,30})</td>.*", response, 1));
@@ -41,7 +41,7 @@ public class SipoPatentInfoProcessor implements IPatentInfoProcessor {
 		String inventor = StringUtils.trimToNull(PatternUtils.getMatchString(".*发&nbsp;明&nbsp;\\(设计\\)人：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,50})</td>.*", response, 1));
 		String globalPatent = StringUtils.trimToNull(PatternUtils.getMatchString(".*国 &nbsp;际 申 请：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String globalPublic = StringUtils.trimToNull(PatternUtils.getMatchString(".*国&nbsp;&nbsp;际&nbsp;&nbsp;公&nbsp;&nbsp;布：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
-		String entryCountryDateString = StringUtils.trimToNull(PatternUtils.getMatchString(".*进入国家日期：</td>\r\n    <td class=\"kuang2\">(.{0,20})</td>.*", response, 1));
+		String entryCountryDateString = StringUtils.trimToNull(PatternUtils.getMatchString(".*进入国家日期：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String agency = StringUtils.trimToNull(PatternUtils.getMatchString(".*专利&nbsp;代理&nbsp;机构： </td>\r\n    <td class=\"kuang3\">&nbsp;(.{0,30})</td>.*", response, 1));
 		String agent = StringUtils.trimToNull(PatternUtils.getMatchString(".*代&nbsp;&nbsp;&nbsp;理&nbsp;&nbsp;&nbsp;人：</td>\r\n    <td class=\"kuang3\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String summary = StringUtils.trimToNull(PatternUtils.getMatchString(".*<td align=\"left\" class=\"zi_zw\">&nbsp;(.*)</td>.*", response, 1));

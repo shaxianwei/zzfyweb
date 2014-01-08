@@ -58,7 +58,6 @@ public class PatentNoLoader implements Runnable{
 				logger.error("执行专利项检索插入线程检索出错，睡眠120秒被打断",e);
 			}
 			
-			
 		} catch (Exception e) {
 			logger.error("执行专利项检索插入线程出错，参数"+JsonUtils.marshalToString(addPatentRecord),e);
 		}
