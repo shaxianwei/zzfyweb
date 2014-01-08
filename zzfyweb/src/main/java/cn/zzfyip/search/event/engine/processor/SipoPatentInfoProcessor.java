@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
 import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.utils.DateUtils;
@@ -23,12 +24,21 @@ public class SipoPatentInfoProcessor implements IPatentInfoProcessor {
 	private static String SIPO_INFO_ADDRESS = "http://211.157.104.87:8080/sipo/zljs/hyjs-yx-new.jsp";
 
 	@Override
-	public PatentInfo processPatentInfo(PatentMain patentMain) {
+	public PatentInfo processPatentInfo(PatentMain patentMain) throws PatentNoLoadHttpWrongException {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("recid", patentMain.getPatentNo());
 		String response = HttpClientUtils.post(SIPO_INFO_ADDRESS, paramMap, "GBK");
 		
+		if(StringUtils.isBlank(response)){
+            throw new PatentNoLoadHttpWrongException();
+        }
+		
 		String patentName = StringUtils.trimToNull(PatternUtils.getMatchString(".*名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称： </td>\r\n    <td colspan=\"3\" class=\"kuang2\">&nbsp;(.{0,50})</td>.*", response, 1));
+		
+		if(StringUtils.isBlank(patentName)){
+            throw new PatentNoLoadHttpWrongException();
+        }
+		
 		String applyDateString = StringUtils.trimToNull(PatternUtils.getMatchString(".*申&nbsp; &nbsp;请&nbsp;&nbsp; 日：\r\n    </td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String publicNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*公&nbsp;开&nbsp;\\(公告\\)&nbsp;号：</td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,20})</td>.*", response, 1));
 		String mainCategoryNo = StringUtils.trimToNull(PatternUtils.getMatchString(".*主 &nbsp;分 &nbsp;类 &nbsp;号： </td>\r\n    <td class=\"kuang2\">&nbsp;(.{0,30})</td>.*", response, 1));
