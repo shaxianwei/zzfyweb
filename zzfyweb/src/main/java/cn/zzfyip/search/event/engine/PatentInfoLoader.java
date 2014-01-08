@@ -78,7 +78,9 @@ public class PatentInfoLoader implements Runnable{
     private void updatePatentMainByPatentInfo(PatentMain patentMain,PatentInfo patentInfo){
         patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_01_NORMAL);
         
-        if(StringUtils.isNotBlank(patentInfo.getAgency())){
+        if(!PatentConstants.TYPE_01_FAMING.equals(patentMain.getPatentType())){
+            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_03_NOSEARCH);
+        }else if(StringUtils.isNotBlank(patentInfo.getAgency())){
             patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_03_NOSEARCH);
         }else if(containsFilterWords(patentInfo.getApplier())||containsFilterWords(patentInfo.getAddress())){
             patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_03_NOSEARCH);

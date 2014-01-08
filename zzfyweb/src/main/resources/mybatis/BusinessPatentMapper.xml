@@ -2,15 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.zzfyip.search.dal.common.dao.PatentDao">
 
-	<resultMap id="BaseResultMap" type="cn.zzfyip.search.dal.common.entity.PatentMain">
-		<id column="patent_no" property="patentNo" jdbcType="VARCHAR" />
-		<result column="patent_name" property="patentName" jdbcType="VARCHAR" />
-		<result column="public_date" property="publicDate" jdbcType="TIMESTAMP" />
-		<result column="patent_status" property="patentStatus"
-			jdbcType="VARCHAR" />
-		<result column="add_date" property="addDate" jdbcType="TIMESTAMP" />
-		<result column="patent_type" property="patentType" jdbcType="SMALLINT" />
-	</resultMap>
+	<resultMap id="BaseResultMap" type="cn.zzfyip.search.dal.common.entity.PatentMain" >
+	    <id column="patent_no" property="patentNo" jdbcType="VARCHAR" />
+	    <result column="patent_name" property="patentName" jdbcType="VARCHAR" />
+	    <result column="public_date" property="publicDate" jdbcType="TIMESTAMP" />
+	    <result column="patent_status" property="patentStatus" jdbcType="VARCHAR" />
+	    <result column="add_date" property="addDate" jdbcType="TIMESTAMP" />
+	    <result column="patent_type" property="patentType" jdbcType="SMALLINT" />
+	    <result column="patent_fawen_search_type" property="patentFawenSearchType" jdbcType="VARCHAR" />
+	    <result column="patent_fawen_search_time" property="patentFawenSearchTime" jdbcType="TIMESTAMP" />
+  	</resultMap>
 
 	<select id="selectMaxPublicDateInPatentMain" resultType="java.util.Date">
 		select
@@ -21,8 +22,10 @@
 		SELECT * FROM public.patent_main where patent_no not in (select patent_no from patent_info) order by patent_type,public_date limit 100;
 	</select>
 	
-	<select id="selectFirst100RecordPatentNoticeFawenSearchPatentMain" resultMap="BaseResultMap">
-		SELECT * FROM public.patent_main where patent_no not in (select patent_no from patent_info) order by patent_type,public_date limit 100;
+	<select id="selectFirst100RecordPatentNoticeFawenSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
+		<![CDATA[
+		SELECT * FROM public.patent_main where patent_fawen_search_type='NORMAL' and patent_fawen_search_time < '${fawenUpdateDate}' order by patent_fawen_search_time,public_date limit 100;
+		]]>
 	</select>
 
 </mapper>

@@ -1,8 +1,11 @@
 package cn.zzfyip.search.dal.common.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.http.impl.cookie.DateUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -92,8 +95,11 @@ public class PatentDao {
 	    }
 	}
 	
-	public List<PatentMain> selectFirst100RecordPatentNoticeFawenSearchPatentMain(){
-        return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain");
+	public List<PatentMain> selectFirst100RecordPatentNoticeFawenSearchPatentMain(Date fawenUpdateDate){
+        Map<String,String> paramMap = new HashMap<String,String>();
+        paramMap.put("fawenUpdateDate", DateUtils.formatDate(fawenUpdateDate));
+	    
+	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain",paramMap);
     }
 	
 }

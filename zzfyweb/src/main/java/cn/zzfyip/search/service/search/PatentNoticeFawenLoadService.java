@@ -1,5 +1,6 @@
 package cn.zzfyip.search.service.search;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +18,6 @@ import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.event.engine.PatentInfoLoader;
-import cn.zzfyip.search.event.engine.processor.IPatentListProcessor;
 import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
 
 @Service
@@ -44,7 +44,10 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	
 	public void searchPatentNoticeFawen(){
 	    logger.info("---------------------开始执行专利项发文通知检索服务-------------------");
-	    List<PatentMain> list = patentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain();
+	    //TODO: 从专利页获取最近的发布时间
+	    Date fawenUpdateDate = new Date();
+	    
+	    List<PatentMain> list = patentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain(fawenUpdateDate);
 	    
 	    while(list.size()!=0){
 	        logger.info("执行专利项发文通知检索服务，本分页执行开始。 ");
@@ -61,7 +64,7 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
                 }
 	        }
 	        logger.info("执行专利项发文通知检索服务，本分页执行完成。 ");
-	        list = patentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain();
+	        list = patentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain(fawenUpdateDate);
 	    }
 	    logger.info("---------------------完成执行专利项发文通知检索服务-------------------");
 	    	    

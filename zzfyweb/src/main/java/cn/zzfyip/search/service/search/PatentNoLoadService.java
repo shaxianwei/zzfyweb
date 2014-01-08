@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.zzfyip.search.common.constant.GlobalConstant;
+import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
@@ -60,9 +61,9 @@ public class PatentNoLoadService implements InitializingBean {
 		Date publicDate = DateUtils.addDay(fromDate, 1);
 		
 		while(publicDate.before(addEndDay)){
-			addPatentTypePatentRecordList(today, publicDate,new Short("11"));;
-			addPatentTypePatentRecordList(today, publicDate,new Short("22"));;
-			addPatentTypePatentRecordList(today, publicDate,new Short("33"));;
+			addPatentTypePatentRecordList(today, publicDate,PatentConstants.TYPE_01_FAMING);;
+			addPatentTypePatentRecordList(today, publicDate,PatentConstants.TYPE_02_SHIYONGXINXING);;
+			addPatentTypePatentRecordList(today, publicDate,PatentConstants.TYPE_03_WAIGUANSHEJI);;
 			publicDate = DateUtils.addDay(publicDate, 1);
 		}
 		
