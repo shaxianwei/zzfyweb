@@ -5,6 +5,8 @@
  */
 package cn.zzfyip.search.event.task;
 
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,16 @@ public class SampleTask {
     private static final Logger logger = LoggerFactory.getLogger(SampleTask.class);
 
     public void helloWorld() {
-        SampleTask.logger.info("Hello World!");
+        SampleTask.logger.info("Hello World! start sleep 5 minitues");
+        try {
+			TimeUnit.MINUTES.sleep(5);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        SampleTask.logger.info("Hello World! end sleep 5 minitues");
+    }
+    
+    public void startExcecuteHello() {
+        SampleTask.logger.info("Hello World! ");
     }
 }

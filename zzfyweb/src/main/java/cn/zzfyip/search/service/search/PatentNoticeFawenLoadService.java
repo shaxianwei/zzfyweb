@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.zzfyip.search.common.constant.GlobalConstant;
+import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
-import cn.zzfyip.search.event.engine.PatentInfoLoader;
 import cn.zzfyip.search.event.engine.PatentNoticeFawenLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
 
@@ -28,6 +28,8 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 
 	@Autowired
 	private IPatentNoticeFawenProcessor patentNoticeFawenProcessor;
+	@Autowired
+	private IPatentNoticeFawenProcessor sipoPatentNoticeFawenProcessor;
 	
 	@Autowired
 	private GlobalConstant globalConstant;
@@ -44,9 +46,19 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	}
 	
 	public void searchPatentNoticeFawen(){
-	    logger.info("---------------------开始执行专利项发文通知检索服务-------------------");
-	    //TODO: 从专利页获取最近的发布时间
-	    Date fawenUpdateDate = new Date();
+		logger.info("---------------------开始执行专利项发文通知检索服务-------------------");
+	    Date fawenUpdateDate = null;
+		while (fawenUpdateDate == null){
+	    	try {
+				fawenUpdateDate = sipoPatentNoticeFawenProcessor.processNoticeFawenUpdateDate();
+			} catch (PatentNoLoadHttpWrongException e) {
+				try {
+					TimeUnit.SECONDS.sleep(300);
+				} catch (InterruptedException e1) {
+					logger.error("InterruptedException",e);
+				}
+			}
+	    }
 	    
 	    List<PatentMain> list = patentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain(fawenUpdateDate);
 	    
@@ -56,7 +68,7 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	            PatentNoticeFawenLoader patentNoticeFawenLoader = new PatentNoticeFawenLoader(patentMain,patentNoticeFawenExecutor,fawenUpdateDate);
 	            patentNoticeFawenExecutor.execute(patentNoticeFawenLoader);
 	        }
-	        while(((ThreadPoolExecutor)patentNoticeFawenExecutor).getActiveCount()>0){
+	        while(((java.util.concurrent.ThreadPoolExecutor)patentNoticeFawenExecutor).getQueue().size()>0){
 	            try {
 	                logger.info("执行专利项发文通知检索服务，活跃线程数{}，队列中线程数{}，主线程睡眠10秒。 ",((ThreadPoolExecutor)patentNoticeFawenExecutor).getActiveCount(), ((java.util.concurrent.ThreadPoolExecutor)patentNoticeFawenExecutor).getQueue().size());
                     TimeUnit.SECONDS.sleep(10);
@@ -69,6 +81,22 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	    }
 	    logger.info("---------------------完成执行专利项发文通知检索服务-------------------");
 	    	    
+	}
+	
+	public void searchPatentNoticeFawenJob() {
+		while (true) {
+			try {
+				this.searchPatentNoticeFawen();
+			} catch (Exception e) {
+				logger.error("执行专利项发文通知检索服务 JOB 失败", e);
+			}
+
+			try {
+				TimeUnit.HOURS.sleep(1);
+			} catch (InterruptedException e) {
+				logger.error("InterruptedException", e);
+			}
+		}
 	}
 	
 }

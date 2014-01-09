@@ -214,6 +214,11 @@ public class DateUtils {
         if (StringUtils.isBlank(date)) {
             return null;
         }
+        
+        if(date.length()==8){
+        	return DateUtils.convertDate(date, DateUtils.DATE_SHORT_PATTERN);
+        }
+        
         if (date.indexOf(":") > 0) {
             return DateUtils.convertDate(date, DateUtils.DATETIME_PATTERN);
         } else if (date.indexOf(".") > 0) {

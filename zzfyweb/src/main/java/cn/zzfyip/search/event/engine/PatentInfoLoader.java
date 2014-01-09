@@ -79,11 +79,11 @@ public class PatentInfoLoader implements Runnable{
         patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_01_NORMAL);
         
         if(!PatentConstants.TYPE_01_FAMING.equals(patentMain.getPatentType())){
-            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_03_NOSEARCH);
+            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
         }else if(StringUtils.isNotBlank(patentInfo.getAgency())){
-            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_03_NOSEARCH);
+            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
         }else if(containsFilterWords(patentInfo.getApplier())||containsFilterWords(patentInfo.getAddress())){
-            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_03_NOSEARCH);
+            patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
         }
         patentDao.updatePatentMain(patentMain);
     }

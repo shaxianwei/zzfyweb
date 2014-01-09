@@ -9,7 +9,6 @@ import org.apache.http.impl.cookie.DateUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecordExample;
@@ -84,7 +83,7 @@ public class PatentDao {
 	    return patentInfoMapper.selectByPrimaryKey(patentNo);
 	}
 	
-	@Transactional
+//	@Transactional
 	public void refreshPatentNoticeFawenByPatentNo(String patentNo,List<PatentNoticeFawen> list){
 	    PatentNoticeFawenExample example = new PatentNoticeFawenExample();
 	    example.createCriteria().andPatentNoEqualTo(patentNo);

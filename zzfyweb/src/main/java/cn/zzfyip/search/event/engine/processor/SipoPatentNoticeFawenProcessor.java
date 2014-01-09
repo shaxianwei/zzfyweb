@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
+import cn.zzfyip.search.utils.DateUtils;
 import cn.zzfyip.search.utils.HttpClientUtils;
 import cn.zzfyip.search.utils.PatternUtils;
 
@@ -22,34 +23,71 @@ public class SipoPatentNoticeFawenProcessor implements IPatentNoticeFawenProcess
 
 	private static final Logger logger = LoggerFactory.getLogger(SipoPatentNoticeFawenProcessor.class);
 
-	private static String SIPO_NOTICE_FAWEN_ADDRESS = "http://app.sipo.gov.cn:8080/sipoaid/jsp/notice/searchnotice.jsp";
+	private static String SIPO_NOTICE_FAWEN_ADDRESS = "http://app.sipo.gov.cn:8080/sipoaid/jsp/notice/searchnotice_result.jsp";
+	private static String SIPO_NOTICE_FAWEN_INDEX_ADDRESS = "http://app.sipo.gov.cn:8080/sipoaid/jsp/notice/searchnotice.jsp";
 
 	public List<PatentNoticeFawen> processPatentNoticeFawen(PatentMain patentMain) throws PatentNoLoadHttpWrongException {
 	    Map<String, String> paramMap = new HashMap<String, String>();
-        paramMap.put("flag3", "1");
+        paramMap.put("sqh", patentMain.getPatentNo());
 
+        int tryTime = 0;
         String response = HttpClientUtils.post(SIPO_NOTICE_FAWEN_ADDRESS, paramMap,"GBK");
-        if(StringUtils.isBlank(response)){
-            throw new PatentNoLoadHttpWrongException();
+        while(StringUtils.isBlank(response)&&tryTime<3){
+        	response = HttpClientUtils.post(SIPO_NOTICE_FAWEN_ADDRESS, paramMap,"GBK");
+        	tryTime++;
         }
+        if(StringUtils.isBlank(response)){
+        	throw new PatentNoLoadHttpWrongException();
+        }
+        
         //      logger.info("response = {}", response);
         List<PatentNoticeFawen> patentList = new ArrayList<PatentNoticeFawen>();
         
         String[] responseArrays = response.split("<tr onMouseOver=");
+        int sequnceNo = 0;
         for(String responsePart:responseArrays){
-            String patentNo = StringUtils.trimToNull(PatternUtils.getMatchString("(.*)?recid=CN(.*)&leixin=(.*)", responsePart, 2));
-            if(StringUtils.isNotBlank(patentNo)){
-                PatentNoticeFawen patentNoticeFawen = new PatentNoticeFawen();
-                patentNoticeFawen.setAddDate(new Date());
-                
-                patentList.add(patentNoticeFawen);
+            String pattenString = "(.*)<td height=\"27\" class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.{0,50})</td>(.*)";
+            String noticeDateString = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 2));
+            if(StringUtils.isBlank(noticeDateString)){
+            	continue;
             }
+            String registerNo = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 4));
+            String noticeCode = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 5));
+            String receiver = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 6));
+            String address = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 7));
+            
+            PatentNoticeFawen patentNoticeFawen = new PatentNoticeFawen();
+            patentNoticeFawen.setPatentNo(patentMain.getPatentNo());
+            patentNoticeFawen.setAddDate(new Date());
+            if(StringUtils.isNotBlank(noticeDateString)){
+            	patentNoticeFawen.setNoticeDate(DateUtils.convertDate(noticeDateString));
+            }
+            patentNoticeFawen.setRegisterNo(registerNo);
+            patentNoticeFawen.setNoticeCode(noticeCode);
+            patentNoticeFawen.setReceiver(receiver);
+            patentNoticeFawen.setAddress(address);
+            patentNoticeFawen.setSequnceNo(sequnceNo++);
+            patentList.add(patentNoticeFawen);
         }
         if(patentList.size()==0){
             throw new PatentNoLoadHttpWrongException();
         }
         
         return patentList;
+	}
+	
+	public Date processNoticeFawenUpdateDate() throws PatentNoLoadHttpWrongException{
+		Map<String, String> paramMap = new HashMap<String, String>();
+		String response = HttpClientUtils.post(SIPO_NOTICE_FAWEN_INDEX_ADDRESS, paramMap,"GBK");
+		if(StringUtils.isBlank(response)){
+            throw new PatentNoLoadHttpWrongException();
+        }
+		String updateDateString = StringUtils.trimToNull(PatternUtils.getMatchString("(.*)最新更新日期：(.{0,20})</font></p>(.*)", response, 2));
+		if(StringUtils.isBlank(updateDateString)){
+            throw new PatentNoLoadHttpWrongException();
+        }
+		Date updateDate = DateUtils.convertDate(updateDateString);
+		return updateDate;
 	}
 
 }

@@ -24,7 +24,7 @@
 	
 	<select id="selectFirst100RecordPatentNoticeFawenSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
 		<![CDATA[
-		SELECT * FROM public.patent_main where patent_fawen_search_type='NORMAL' and patent_fawen_search_time < '${fawenUpdateDate}' order by patent_fawen_search_time,public_date limit 100;
+		SELECT * FROM public.patent_main where patent_fawen_search_type='NORMAL' and (patent_fawen_search_time < '${fawenUpdateDate}' or patent_fawen_search_time is null) order by patent_fawen_search_time,public_date limit 100;
 		]]>
 	</select>
 
