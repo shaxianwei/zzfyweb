@@ -69,6 +69,14 @@ public class PatentInfoLoadService implements InitializingBean {
 	}
 
 	public void searchPatentInfoJob() {
+		
+		//延迟一分钟执行
+		try {
+			TimeUnit.MINUTES.sleep(1);
+		} catch (InterruptedException e) {
+			logger.error("InterruptedException", e);
+		}
+		
 		while (true) {
 			try {
 				this.searchPatentInfo();

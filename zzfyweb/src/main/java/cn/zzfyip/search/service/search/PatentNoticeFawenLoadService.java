@@ -84,6 +84,14 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	}
 	
 	public void searchPatentNoticeFawenJob() {
+		
+		//延迟一分钟执行
+		try {
+			TimeUnit.MINUTES.sleep(1);
+		} catch (InterruptedException e) {
+			logger.error("InterruptedException", e);
+		}
+		
 		while (true) {
 			try {
 				this.searchPatentNoticeFawen();
