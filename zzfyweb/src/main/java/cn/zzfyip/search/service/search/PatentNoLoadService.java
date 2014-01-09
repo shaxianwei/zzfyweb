@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,9 @@ import cn.zzfyip.search.utils.DateUtils;
 
 /**
  * 专利号加载服务
+ * 
  * @author changsure
- *
+ * 
  */
 @Service
 public class PatentNoLoadService implements InitializingBean {
@@ -31,76 +33,79 @@ public class PatentNoLoadService implements InitializingBean {
 
 	@Autowired
 	private IPatentListProcessor sipoPatentListProcessor;
-	
+
 	@Autowired
 	private GlobalConstant globalConstant;
-	
+
 	@Autowired
 	private PatentDao patentDao;
-	
+
 	private ExecutorService addPatentExecutor;
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		addPatentExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory(
-                "add-patent-dispatcher", true));
+		addPatentExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("add-patent-dispatcher", true));
 	}
 
 	/**
 	 * 添加专利项搜索的记录条目
 	 */
-	public void createAddPatentRecord(){
+	public void createAddPatentRecord() {
 		Date today = new Date();
 		Date addEndDay = DateUtils.addDay(today, -30);
-		//查询数据库，最近的一天，如果没有，则以配置的起始天为准
+		// 查询数据库，最近的一天，如果没有，则以配置的起始天为准
 		Date fromDate = DateUtils.convertDate(globalConstant.getPatentFromDate());
 		Date maxRecentRecordDay = patentDao.selectMaxPublicDateInPatentMain();
-		if(maxRecentRecordDay!=null&&maxRecentRecordDay.after(fromDate)){
+		if (maxRecentRecordDay != null && maxRecentRecordDay.after(fromDate)) {
 			fromDate = maxRecentRecordDay;
 		}
 		Date publicDate = DateUtils.addDay(fromDate, 1);
-		
-		while(publicDate.before(addEndDay)){
-			addPatentTypePatentRecordList(today, publicDate,PatentConstants.TYPE_01_FAMING);;
-			addPatentTypePatentRecordList(today, publicDate,PatentConstants.TYPE_02_SHIYONGXINXING);;
-			addPatentTypePatentRecordList(today, publicDate,PatentConstants.TYPE_03_WAIGUANSHEJI);;
+
+		while (publicDate.before(addEndDay)) {
+			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_01_FAMING);
+			;
+			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_02_SHIYONGXINXING);
+			;
+			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_03_WAIGUANSHEJI);
+			;
 			publicDate = DateUtils.addDay(publicDate, 1);
 		}
-		
+
 	}
+
 	/**
 	 * 添加专利项搜索的记录条目
 	 */
-	public void createAddPatentRecordByBeginDateAndEndDate(Date beginDate,Date endDate){
+	public void createAddPatentRecordByBeginDateAndEndDate(Date beginDate, Date endDate) {
 		Date publicDate = beginDate;
 		Date today = new Date();
-		
-		while(publicDate.before(endDate)){
-			addPatentTypePatentRecordList(today, publicDate,new Short("11"));
+
+		while (publicDate.before(endDate)) {
+			addPatentTypePatentRecordList(today, publicDate, new Short("11"));
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
-				logger.error("InterruptedException",e);
+				logger.error("InterruptedException", e);
 			}
-			addPatentTypePatentRecordList(today, publicDate,new Short("22"));
+			addPatentTypePatentRecordList(today, publicDate, new Short("22"));
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
-				logger.error("InterruptedException",e);
+				logger.error("InterruptedException", e);
 			}
-			addPatentTypePatentRecordList(today, publicDate,new Short("33"));
+			addPatentTypePatentRecordList(today, publicDate, new Short("33"));
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
-				logger.error("InterruptedException",e);
+				logger.error("InterruptedException", e);
 			}
 			publicDate = DateUtils.addDay(publicDate, 1);
 		}
-		
+
 	}
 
-	private void addPatentTypePatentRecordList(Date today, Date publicDate,Short patentType) {
-		logger.info("开始添加专利项读取任务记录，发布日为：{}，专利类型为{} 。",publicDate,patentType);
+	private void addPatentTypePatentRecordList(Date today, Date publicDate, Short patentType) {
+		logger.info("开始添加专利项读取任务记录，发布日为：{}，专利类型为{} 。", publicDate, patentType);
 		Integer pageNumCount = sipoPatentListProcessor.countPagePatentList(publicDate, patentType);
 		AddPatentRecord record = new AddPatentRecord();
 		record.setAddDate(today);
@@ -109,33 +114,59 @@ public class PatentNoLoadService implements InitializingBean {
 		record.setPerPageNum(globalConstant.getNumPerPage().longValue());
 		record.setPublicDate(publicDate);
 		record.setTotalPage(pageNumCount.longValue());
-		
-		//如果没有记录，也增加一条已经完成的load记录
-		if(pageNumCount==0){
+
+		// 如果没有记录，也增加一条已经完成的load记录
+		if (pageNumCount == 0) {
 			record.setCurrentPage(0L);
 			record.setId(null);
 			record.setLoadStatus(new Short("1"));
 			patentDao.insertAddPatentRecord(record);
-		}else{
+		} else {
 			Integer pageNum = 1;
-			while(pageNum<=pageNumCount){
+			while (pageNum <= pageNumCount) {
 				record.setCurrentPage(pageNum.longValue());
 				record.setId(null);
 				patentDao.insertAddPatentRecord(record);
 				pageNum++;
 			}
 		}
-		logger.info("结束添加专利项读取任务记录，发布日为：{}，专利类型为{} 。",publicDate,patentType);
+		logger.info("结束添加专利项读取任务记录，发布日为：{}，专利类型为{} 。", publicDate, patentType);
 	}
-	
+
 	/**
 	 * 将未载入的专利项，添加到专利主表
 	 */
-	public void addUnsearchedPatentRecordToPatentMain(){
+	public void addUnsearchedPatentRecordToPatentMain() {
 		List<AddPatentRecord> list = patentDao.selectUnfinishedAddPatentRecord();
+
+		for (AddPatentRecord record : list) {
+			addPatentExecutor.execute(new PatentNoLoader(record, addPatentExecutor));
+		}
+	}
+
+	/**
+	 * 将未载入的专利项，添加到专利主表
+	 */
+	public void addUnsearchedPatentRecordToPatentMainJob() {
+		// 延迟一分钟执行
+		try {
+			TimeUnit.MINUTES.sleep(1);
+		} catch (InterruptedException e) {
+			logger.error("InterruptedException", e);
+		}
 		
-		for(AddPatentRecord record:list){
-			addPatentExecutor.execute(new PatentNoLoader(record,addPatentExecutor));
+		while (true) {
+			try {
+				this.addUnsearchedPatentRecordToPatentMain();
+			} catch (Exception e) {
+				logger.error("执行专利项List检索添加MAIN表服务 JOB 失败", e);
+			}
+			
+			try {
+				TimeUnit.HOURS.sleep(1);
+			} catch (InterruptedException e) {
+				logger.error("InterruptedException", e);
+			}
 		}
 	}
 }

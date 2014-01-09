@@ -1,11 +1,12 @@
 package cn.zzfyip.search.dal.common.mapper;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import cn.zzfyip.search.common.annotation.Mapper;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawenExample;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Service;
 
 @Mapper
 public interface PatentNoticeFawenMapper {

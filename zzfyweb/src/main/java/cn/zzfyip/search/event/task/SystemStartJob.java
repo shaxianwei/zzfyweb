@@ -1,7 +1,6 @@
 package cn.zzfyip.search.event.task;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,14 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 	         //需要执行的逻辑代码，当spring容器初始化完成后就会执行该方法。 安全起见，延迟两分钟启动。
 			logger.info("Spring容器启动完毕，加载系统检索线程");
 			ExecutorService jobExecutor = Executors.newFixedThreadPool(3, new NamedThreadFactory("patent-JOB-dispatcher", true));
+			
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					patentNoLoadService.addUnsearchedPatentRecordToPatentMainJob();
+				}
+			});
+			
 			jobExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
@@ -44,12 +51,12 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 				}
 			});
 			
-			jobExecutor.execute(new Runnable() {
-				@Override
-				public void run() {
-					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
-				}
-			});
+//			jobExecutor.execute(new Runnable() {
+//				@Override
+//				public void run() {
+//					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
+//				}
+//			});
 	    } 
 	}
 }
