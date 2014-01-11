@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
@@ -18,6 +19,7 @@ import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
 import cn.zzfyip.search.event.engine.processor.SipoPatentNoticeFawenProcessor;
 import cn.zzfyip.search.utils.JsonUtils;
 import cn.zzfyip.search.utils.SpringContextUtils;
+import cn.zzfyip.search.utils.ThreadSleepUtils;
 
 public class PatentNoticeFawenLoader implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(PatentNoticeFawenLoader.class);
@@ -31,6 +33,8 @@ public class PatentNoticeFawenLoader implements Runnable {
 	private IPatentNoticeFawenProcessor patentNoticeFawenProcessor;
 
 	private PatentDao patentDao;
+	
+	private GlobalConstant globalConstant;
 
 	public PatentNoticeFawenLoader(PatentMain patentMain, ExecutorService patentNoticeFawenExecutor, Date fawenUpdateDate) {
 		this.patentMain = patentMain;
@@ -38,6 +42,7 @@ public class PatentNoticeFawenLoader implements Runnable {
 		this.fawenUpdateDate = fawenUpdateDate;
 		this.patentNoticeFawenProcessor = SpringContextUtils.getBean(SipoPatentNoticeFawenProcessor.class);
 		this.patentDao = SpringContextUtils.getBean(PatentDao.class);
+		this.globalConstant = SpringContextUtils.getBean(GlobalConstant.class);
 	}
 
 	@Override
@@ -48,8 +53,12 @@ public class PatentNoticeFawenLoader implements Runnable {
 			list = patentNoticeFawenProcessor.processPatentNoticeFawen(patentMain);
 			patentDao.refreshPatentNoticeFawenByPatentNo(patentMain.getPatentNo(), list);
 			this.updatePatentMainFawenStatus(patentMain, list);
+			
+			ThreadSleepUtils.sleepMilliSeconds(globalConstant.getPatentFawenThreadDelayMilliSeconds());
+            
 		} catch (PatentNoLoadHttpWrongException e) {
-			logger.info("执行专利项发文通知检索线程出错，结束线程池并睡眠120秒，参数" + JsonUtils.marshalToString(patentMain));
+//			globalConstant.setPatentFawenThreadDelayMilliSeconds(globalConstant.getPatentFawenThreadDelayMilliSeconds()+100);
+			logger.info("执行专利项发文通知检索线程出错，提升单线程检索等待时间为{}毫秒，结束线程池并睡眠120秒，参数{}" ,globalConstant.getPatentFawenThreadDelayMilliSeconds(),JsonUtils.marshalToString(patentMain));
 			try {
 				patentNoticeFawenExecutor.awaitTermination(120, TimeUnit.SECONDS);
 			} catch (InterruptedException e1) {

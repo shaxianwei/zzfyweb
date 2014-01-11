@@ -20,6 +20,7 @@ import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.event.engine.PatentNoLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentListProcessor;
 import cn.zzfyip.search.utils.DateUtils;
+import cn.zzfyip.search.utils.ThreadSleepUtils;
 
 /**
  * 专利号加载服务
@@ -54,7 +55,7 @@ public class PatentNoLoadService implements InitializingBean {
 		Date today = new Date();
 		Date addEndDay = DateUtils.addDay(today, -30);
 		// 查询数据库，最近的一天，如果没有，则以配置的起始天为准
-		Date fromDate = DateUtils.convertDate(globalConstant.getPatentFromDate());
+		Date fromDate = DateUtils.convertDate(globalConstant.getPatentNoFromDate());
 		Date maxRecentRecordDay = patentDao.selectMaxPublicDateInPatentMain();
 		if (maxRecentRecordDay != null && maxRecentRecordDay.after(fromDate)) {
 			fromDate = maxRecentRecordDay;
@@ -63,11 +64,8 @@ public class PatentNoLoadService implements InitializingBean {
 
 		while (publicDate.before(addEndDay)) {
 			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_01_FAMING);
-			;
 			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_02_SHIYONGXINXING);
-			;
 			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_03_WAIGUANSHEJI);
-			;
 			publicDate = DateUtils.addDay(publicDate, 1);
 		}
 
@@ -82,23 +80,11 @@ public class PatentNoLoadService implements InitializingBean {
 
 		while (publicDate.before(endDate)) {
 			addPatentTypePatentRecordList(today, publicDate, new Short("11"));
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				logger.error("InterruptedException", e);
-			}
+			ThreadSleepUtils.sleepSeconds(2);
 			addPatentTypePatentRecordList(today, publicDate, new Short("22"));
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				logger.error("InterruptedException", e);
-			}
+			ThreadSleepUtils.sleepSeconds(2);
 			addPatentTypePatentRecordList(today, publicDate, new Short("33"));
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				logger.error("InterruptedException", e);
-			}
+			ThreadSleepUtils.sleepSeconds(2);
 			publicDate = DateUtils.addDay(publicDate, 1);
 		}
 
@@ -111,7 +97,7 @@ public class PatentNoLoadService implements InitializingBean {
 		record.setAddDate(today);
 		record.setLoadStatus(new Short("0"));
 		record.setPatentType(patentType);
-		record.setPerPageNum(globalConstant.getNumPerPage().longValue());
+		record.setPerPageNum(globalConstant.getPatentNoNumPerPage().longValue());
 		record.setPublicDate(publicDate);
 		record.setTotalPage(pageNumCount.longValue());
 
@@ -149,11 +135,7 @@ public class PatentNoLoadService implements InitializingBean {
 	 */
 	public void addUnsearchedPatentRecordToPatentMainJob() {
 		// 延迟一分钟执行
-		try {
-			TimeUnit.MINUTES.sleep(1);
-		} catch (InterruptedException e) {
-			logger.error("InterruptedException", e);
-		}
+		ThreadSleepUtils.sleepMinutes(1);
 		
 		while (true) {
 			try {
@@ -162,11 +144,7 @@ public class PatentNoLoadService implements InitializingBean {
 				logger.error("执行专利项List检索添加MAIN表服务 JOB 失败", e);
 			}
 			
-			try {
-				TimeUnit.HOURS.sleep(1);
-			} catch (InterruptedException e) {
-				logger.error("InterruptedException", e);
-			}
+			ThreadSleepUtils.sleepHours(2);
 		}
 	}
 }

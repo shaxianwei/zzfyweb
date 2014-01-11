@@ -30,20 +30,27 @@ public class GlobalConstant {
     @Value("${dbPassword}")
     private String dbPassword;
 
-    @Value("${patent.from.date}")
-    private String patentFromDate;
+    @Value("${patentNo.fromDate}")
+    private String patentNoFromDate;
     
-    @Value("${num.per.page}")
-    private Integer numPerPage;
+    @Value("${patentNo.numPerPage}")
+    private Integer patentNoNumPerPage;
     
-    @Value("${thread.patentInfoThreadNum}")
-    private Integer patentInfoThreadNum;
+    @Value("${patentInfo.searchThreadNum}")
+    private Integer patentInfoSearchThreadNum;
     
-    @Value("${thread.patentNoticeFawenThreadNum}")
-    private Integer patentNoticeFawenThreadNum;
+    @Value("${patentFawen.searchThreadNum}")
+    private Integer patentFawenSearchTreadNum;
     
-    @Value("${patent.fawen.filterWords}")
-    private String fawenFilterWords;
+    @Value("${patentFawen.info.filterWords}")
+    private String patentFawenInfoFilterWords;
+    
+    @Value("${patentInfo.threadDelayMilliSeconds}")
+    private Integer patentInfoThreadDelayMilliSeconds;
+    
+    @Value("${patentFawen.threadDelayMilliSeconds}")
+    private Integer patentFawenThreadDelayMilliSeconds;
+    
 
 	public String getDbJdbcurl() {
 		return dbJdbcurl;
@@ -69,44 +76,54 @@ public class GlobalConstant {
 		this.dbPassword = dbPassword;
 	}
 
-	public String getPatentFromDate() {
-		return patentFromDate;
+	public String getPatentNoFromDate() {
+		return patentNoFromDate;
 	}
 
-	public void setPatentFromDate(String patentFromDate) {
-		this.patentFromDate = patentFromDate;
+	public void setPatentNoFromDate(String patentNoFromDate) {
+		this.patentNoFromDate = patentNoFromDate;
 	}
 
-	public Integer getNumPerPage() {
-		return numPerPage;
+	public Integer getPatentNoNumPerPage() {
+		return patentNoNumPerPage;
 	}
 
-	public void setNumPerPage(Integer numPerPage) {
-		this.numPerPage = numPerPage;
+	public void setPatentNoNumPerPage(Integer patentNoNumPerPage) {
+		this.patentNoNumPerPage = patentNoNumPerPage;
 	}
 
-    public Integer getPatentInfoThreadNum() {
-        return patentInfoThreadNum;
-    }
+	public Integer getPatentInfoSearchThreadNum() {
+		return patentInfoSearchThreadNum;
+	}
 
-    public void setPatentInfoThreadNum(Integer patentInfoThreadNum) {
-        this.patentInfoThreadNum = patentInfoThreadNum;
-    }
+	public void setPatentInfoSearchThreadNum(Integer patentInfoSearchThreadNum) {
+		this.patentInfoSearchThreadNum = patentInfoSearchThreadNum;
+	}
 
-    public Integer getPatentNoticeFawenThreadNum() {
-        return patentNoticeFawenThreadNum;
-    }
+	public Integer getPatentFawenSearchTreadNum() {
+		return patentFawenSearchTreadNum;
+	}
 
-    public void setPatentNoticeFawenThreadNum(Integer patentNoticeFawenThreadNum) {
-        this.patentNoticeFawenThreadNum = patentNoticeFawenThreadNum;
-    }
+	public void setPatentFawenSearchTreadNum(Integer patentFawenSearchTreadNum) {
+		this.patentFawenSearchTreadNum = patentFawenSearchTreadNum;
+	}
 
-    public String getFawenFilterWords() {
-        return fawenFilterWords;
-    }
+	public String getPatentFawenInfoFilterWords() {
+		return patentFawenInfoFilterWords;
+	}
 
-    public void setFawenFilterWords(String fawenFilterWords) {
-        this.fawenFilterWords = fawenFilterWords;
-    }
+	public void setPatentFawenInfoFilterWords(String patentFawenInfoFilterWords) {
+		this.patentFawenInfoFilterWords = patentFawenInfoFilterWords;
+	}
+
+	public Integer getPatentInfoThreadDelayMilliSeconds() {
+		return patentInfoThreadDelayMilliSeconds;
+	}
+
+
+	public Integer getPatentFawenThreadDelayMilliSeconds() {
+		return patentFawenThreadDelayMilliSeconds;
+	}
+
     
 }

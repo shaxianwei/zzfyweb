@@ -37,7 +37,7 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 	public List<PatentMain> processPatentList(AddPatentRecord addPatentRecord) throws PatentNoLoadHttpWrongException {
 
 		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("recshu", globalConstant.getNumPerPage()+"");
+		paramMap.put("recshu", globalConstant.getPatentNoNumPerPage()+"");
 		String searchWord = "公开（公告）日=("+ DateUtils.formatDateToPointDate(addPatentRecord.getPublicDate()) + ")";
 		
 		paramMap.put("searchword", searchWord);
@@ -98,7 +98,7 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 			return 0;
 		}
 		
-		Integer pageNum = Math.round(totol / globalConstant.getNumPerPage())+1;
+		Integer pageNum = Math.round(totol / globalConstant.getPatentNoNumPerPage())+1;
 		return pageNum;
 	}
 }

@@ -51,12 +51,12 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 				}
 			});
 			
-//			jobExecutor.execute(new Runnable() {
-//				@Override
-//				public void run() {
-//					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
-//				}
-//			});
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
+				}
+			});
 	    } 
 	}
 }

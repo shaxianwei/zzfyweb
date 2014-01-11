@@ -52,7 +52,7 @@
 	<!-- ======================================= -->
 	<bean id="addPatentNoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="sampleJobDetail" />
-		<property name="cronExpression" value="* * 7 * * ?" />
+		<property name="cronExpression" value="0 0 7 * * ?" />
 	</bean>
 	<bean id="addPatentNoJobDetail"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.impl.cookie.DateUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,6 +19,7 @@ import cn.zzfyip.search.dal.common.mapper.AddPatentRecordMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentInfoMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentMainMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentNoticeFawenMapper;
+import cn.zzfyip.search.utils.DateUtils;
 
 @Repository
 public class PatentDao {

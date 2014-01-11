@@ -18,6 +18,7 @@ import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.event.engine.PatentInfoLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentListProcessor;
+import cn.zzfyip.search.utils.ThreadSleepUtils;
 
 @Service
 public class PatentInfoLoadService implements InitializingBean {
@@ -37,7 +38,7 @@ public class PatentInfoLoadService implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		loadPatentInfoExecutor = Executors.newFixedThreadPool(globalConstant.getPatentInfoThreadNum(), new NamedThreadFactory("patent-info-dispatcher", true));
+		loadPatentInfoExecutor = Executors.newFixedThreadPool(globalConstant.getPatentInfoSearchThreadNum(), new NamedThreadFactory("patent-info-dispatcher", true));
 	}
 
 	public void searchPatentInfo() {
@@ -52,13 +53,9 @@ public class PatentInfoLoadService implements InitializingBean {
 				loadPatentInfoExecutor.execute(patentInfoLoader);
 			}
 			while (((ThreadPoolExecutor) loadPatentInfoExecutor).getQueue().size() > 0) {
-				try {
-					logger.info("执行专利项信息检索服务，活跃线程数{}，队列中线程数{}，主线程睡眠10秒。 ", ((ThreadPoolExecutor) loadPatentInfoExecutor).getActiveCount(),
-							((java.util.concurrent.ThreadPoolExecutor) loadPatentInfoExecutor).getQueue().size());
-					TimeUnit.SECONDS.sleep(10);
-				} catch (InterruptedException e) {
-					logger.error("InterruptedException", e);
-				}
+				logger.info("执行专利项信息检索服务，活跃线程数{}，队列中线程数{}，线程结束等待时间{}毫秒，主线程睡眠10秒。 ", ((ThreadPoolExecutor) loadPatentInfoExecutor).getActiveCount(),
+						((java.util.concurrent.ThreadPoolExecutor) loadPatentInfoExecutor).getQueue().size(),globalConstant.getPatentInfoThreadDelayMilliSeconds());
+				ThreadSleepUtils.sleepSeconds(10);
 			}
 			logger.info("执行专利项信息检索服务，本分页执行完成。 ");
 			list = patentDao.selectFirst100RecordPatentInfoSearchPatentMain();
@@ -69,14 +66,10 @@ public class PatentInfoLoadService implements InitializingBean {
 	}
 
 	public void searchPatentInfoJob() {
-		
-		//延迟一分钟执行
-		try {
-			TimeUnit.MINUTES.sleep(1);
-		} catch (InterruptedException e) {
-			logger.error("InterruptedException", e);
-		}
-		
+
+		// 延迟一分钟执行
+		ThreadSleepUtils.sleepMinutes(1);
+
 		while (true) {
 			try {
 				this.searchPatentInfo();
@@ -84,11 +77,8 @@ public class PatentInfoLoadService implements InitializingBean {
 				logger.error("执行专利项信息检索服务 JOB 失败", e);
 			}
 
-			try {
-				TimeUnit.HOURS.sleep(1);
-			} catch (InterruptedException e) {
-				logger.error("InterruptedException", e);
-			}
+			//下次任务检测2小时候进行
+			ThreadSleepUtils.sleepHours(2);
 		}
 	}
 
