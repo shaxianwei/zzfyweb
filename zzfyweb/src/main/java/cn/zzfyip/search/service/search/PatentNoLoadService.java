@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.constant.PatentConstants;
+import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
@@ -50,31 +52,42 @@ public class PatentNoLoadService implements InitializingBean {
 
 	/**
 	 * 添加专利项搜索的记录条目
+	 * @throws PatentPharseException 
+	 * @throws PatentNoLoadHttpWrongException 
 	 */
 	public void createAddPatentRecord() {
-		Date today = new Date();
-		Date addEndDay = DateUtils.addDay(today, -30);
-		// 查询数据库，最近的一天，如果没有，则以配置的起始天为准
-		Date fromDate = DateUtils.convertDate(globalConstant.getPatentNoFromDate());
-		Date maxRecentRecordDay = patentDao.selectMaxPublicDateInPatentMain();
-		if (maxRecentRecordDay != null && maxRecentRecordDay.after(fromDate)) {
-			fromDate = maxRecentRecordDay;
-		}
-		Date publicDate = DateUtils.addDay(fromDate, 1);
+		try {
+			Date today = new Date();
+			Date addEndDay = DateUtils.addDay(today, -30);
+			// 查询数据库，最近的一天，如果没有，则以配置的起始天为准
+			Date fromDate = DateUtils.convertDate(globalConstant.getPatentNoFromDate());
+			Date maxRecentRecordDay = patentDao.selectMaxPublicDateInPatentMain();
+			if (maxRecentRecordDay != null && maxRecentRecordDay.after(fromDate)) {
+				fromDate = maxRecentRecordDay;
+			}
+			Date publicDate = DateUtils.addDay(fromDate, 1);
 
-		while (publicDate.before(addEndDay)) {
-			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_01_FAMING);
-			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_02_SHIYONGXINXING);
-			addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_03_WAIGUANSHEJI);
-			publicDate = DateUtils.addDay(publicDate, 1);
+			while (publicDate.before(addEndDay)) {
+				addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_01_FAMING);
+				addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_02_SHIYONGXINXING);
+				addPatentTypePatentRecordList(today, publicDate, PatentConstants.TYPE_03_WAIGUANSHEJI);
+				publicDate = DateUtils.addDay(publicDate, 1);
+			}
+		} catch (PatentNoLoadHttpWrongException e) {
+			logger.error("添加专利项添加任务读取网页出错",e);
+		} catch (PatentPharseException e) {
+			logger.error("添加专利项添加任务解析出错",e);
 		}
 
 	}
 
 	/**
 	 * 添加专利项搜索的记录条目
+	 * @throws PatentPharseException 
+	 * @throws PatentNoLoadHttpWrongException 
+	 * @throws  
 	 */
-	public void createAddPatentRecordByBeginDateAndEndDate(Date beginDate, Date endDate) {
+	public void createAddPatentRecordByBeginDateAndEndDate(Date beginDate, Date endDate) throws PatentNoLoadHttpWrongException, PatentPharseException {
 		Date publicDate = beginDate;
 		Date today = new Date();
 
@@ -90,9 +103,16 @@ public class PatentNoLoadService implements InitializingBean {
 
 	}
 
-	private void addPatentTypePatentRecordList(Date today, Date publicDate, Short patentType) {
+	private void addPatentTypePatentRecordList(Date today, Date publicDate, Short patentType) throws PatentNoLoadHttpWrongException, PatentPharseException {
 		logger.info("开始添加专利项读取任务记录，发布日为：{}，专利类型为{} 。", publicDate, patentType);
-		Integer pageNumCount = sipoPatentListProcessor.countPagePatentList(publicDate, patentType);
+		Integer pageNumCount;
+		try {
+			pageNumCount = sipoPatentListProcessor.countPagePatentList(publicDate, patentType);
+		} catch (PatentNoLoadHttpWrongException e) {
+			throw e;
+		} catch (PatentPharseException e) {
+			throw e;
+		}
 		AddPatentRecord record = new AddPatentRecord();
 		record.setAddDate(today);
 		record.setLoadStatus(new Short("0"));

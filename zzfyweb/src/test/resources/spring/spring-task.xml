@@ -23,38 +23,41 @@
 	<!-- ======================================= -->
 	<!-- 任务调度配置 -->
 	<!-- ======================================= -->
-	<!-- <bean name="quartzScheduler"
-		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="dataSource">
-			<ref bean="myDataSource" />
-		</property>
-		<property name="applicationContextSchedulerContextKey" value="applicationContextKey" />
-		<property name="configLocation" value="classpath:quartz.properties" />
-		
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="sampleTrigger" />
+				<ref bean="addPatentNoJobTrigger" />
 			</list>
 		</property>
-	</bean> -->
+		<property name="autoStartup" value="true" />
+	</bean>
 
 	<!-- ======================================= -->
-	<!-- JOB1: Sample Task-->
+	<!-- JOB1: Sample Task                       -->
 	<!-- ======================================= -->
-<!--	<bean id="sampleTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-		<property name="jobDetail" ref="sampleJob" />
-		<property name="cronExpression" value="0 */2 * * * ?" />
+	<bean id="sampleTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sampleJobDetail" />
+		<property name="cronExpression" value="*/1 * * * * ?" /><!-- 每隔1秒钟触发一次 -->
 	</bean>
- 	<bean id="sampleJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-		<property name="jobClass">
-			<value>cn.zzfyip.search.event.task.MyDetailQuartzJobBean</value>
-		</property>
-		<property name="jobDataAsMap">
-			<map>
-				<entry key="targetObject" value="sampleTask" />
-				<entry key="targetMethod" value="helloWorld" />
-			</map>
-		</property>
-	</bean> -->
-	
+	<bean id="sampleJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="sampleTask" />
+		<property name="targetMethod" value="helloWorld" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- ======================================= -->
+	<!-- JOB2: 专利项加载定时任务，每天凌晨7点执行一次            -->
+	<!-- ======================================= -->
+	<bean id="addPatentNoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sampleJobDetail" />
+		<property name="cronExpression" value="0 0 7 * * ?" />
+	</bean>
+	<bean id="addPatentNoJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="patentNoLoadService" />
+		<property name="targetMethod" value="createAddPatentRecord" />
+		<property name="concurrent" value="false" />
+	</bean>
 </beans>

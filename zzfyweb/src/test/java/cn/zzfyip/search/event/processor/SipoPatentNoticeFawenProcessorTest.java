@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cn.zzfyip.search.base.BaseTest;
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
 import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
@@ -32,6 +33,8 @@ public class SipoPatentNoticeFawenProcessorTest extends BaseTest {
 			list = patentNoticeFawenProcessor.processPatentNoticeFawen(patentMain);
 		} catch (PatentNoLoadHttpWrongException e) {
 			e.printStackTrace();
+		} catch (PatentPharseException e) {
+			e.printStackTrace();
 		}
 		Assert.assertEquals(list.size(), 4);
 	}
@@ -42,6 +45,8 @@ public class SipoPatentNoticeFawenProcessorTest extends BaseTest {
 		try {
 			updateDate = patentNoticeFawenProcessor.processNoticeFawenUpdateDate();
 		} catch (PatentNoLoadHttpWrongException e) {
+			e.printStackTrace();
+		} catch (PatentPharseException e) {
 			e.printStackTrace();
 		}
 		Assert.assertNotNull(updateDate);

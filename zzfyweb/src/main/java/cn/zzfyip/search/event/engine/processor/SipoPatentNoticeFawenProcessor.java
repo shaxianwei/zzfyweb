@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
 import cn.zzfyip.search.utils.DateUtils;
@@ -26,7 +27,7 @@ public class SipoPatentNoticeFawenProcessor implements IPatentNoticeFawenProcess
 	private static String SIPO_NOTICE_FAWEN_ADDRESS = "http://app.sipo.gov.cn:8080/sipoaid/jsp/notice/searchnotice_result.jsp";
 	private static String SIPO_NOTICE_FAWEN_INDEX_ADDRESS = "http://app.sipo.gov.cn:8080/sipoaid/jsp/notice/searchnotice.jsp";
 
-	public List<PatentNoticeFawen> processPatentNoticeFawen(PatentMain patentMain) throws PatentNoLoadHttpWrongException {
+	public List<PatentNoticeFawen> processPatentNoticeFawen(PatentMain patentMain) throws PatentNoLoadHttpWrongException, PatentPharseException {
 	    Map<String, String> paramMap = new HashMap<String, String>();
         paramMap.put("sqh", patentMain.getPatentNo());
 
@@ -43,40 +44,44 @@ public class SipoPatentNoticeFawenProcessor implements IPatentNoticeFawenProcess
         //      logger.info("response = {}", response);
         List<PatentNoticeFawen> patentList = new ArrayList<PatentNoticeFawen>();
         
-        String[] responseArrays = response.split("<tr onMouseOver=");
-        int sequnceNo = 0;
-        for(String responsePart:responseArrays){
-            String pattenString = "(.*)<td height=\"27\" class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.{0,50})</td>(.*)";
-            String noticeDateString = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 2));
-            if(StringUtils.isBlank(noticeDateString)){
-            	continue;
-            }
-            String registerNo = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 4));
-            String noticeCode = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 5));
-            String receiver = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 6));
-            String address = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 7));
-            
-            PatentNoticeFawen patentNoticeFawen = new PatentNoticeFawen();
-            patentNoticeFawen.setPatentNo(patentMain.getPatentNo());
-            patentNoticeFawen.setAddDate(new Date());
-            if(StringUtils.isNotBlank(noticeDateString)){
-            	patentNoticeFawen.setNoticeDate(DateUtils.convertDate(noticeDateString));
-            }
-            patentNoticeFawen.setRegisterNo(registerNo);
-            patentNoticeFawen.setNoticeCode(noticeCode);
-            patentNoticeFawen.setReceiver(receiver);
-            patentNoticeFawen.setAddress(address);
-            patentNoticeFawen.setSequnceNo(sequnceNo++);
-            patentList.add(patentNoticeFawen);
-        }
+        try {
+			String[] responseArrays = response.split("<tr onMouseOver=");
+			int sequnceNo = 0;
+			for(String responsePart:responseArrays){
+			    String pattenString = "(.*)<td height=\"27\" class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>(.*)";
+			    String noticeDateString = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 2));
+			    if(StringUtils.isBlank(noticeDateString)){
+			    	continue;
+			    }
+			    String registerNo = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 4));
+			    String noticeCode = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 5));
+			    String receiver = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 6));
+			    String address = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 7));
+			    
+			    PatentNoticeFawen patentNoticeFawen = new PatentNoticeFawen();
+			    patentNoticeFawen.setPatentNo(patentMain.getPatentNo());
+			    patentNoticeFawen.setAddDate(new Date());
+			    if(StringUtils.isNotBlank(noticeDateString)){
+			    	patentNoticeFawen.setNoticeDate(DateUtils.convertDate(noticeDateString));
+			    }
+			    patentNoticeFawen.setRegisterNo(registerNo);
+			    patentNoticeFawen.setNoticeCode(noticeCode);
+			    patentNoticeFawen.setReceiver(receiver);
+			    patentNoticeFawen.setAddress(address);
+			    patentNoticeFawen.setSequnceNo(sequnceNo++);
+			    patentList.add(patentNoticeFawen);
+			}
+		} catch (Exception e) {
+			throw new PatentPharseException(e);
+		}
         if(patentList.size()==0){
-            throw new PatentNoLoadHttpWrongException();
+            throw new PatentPharseException();
         }
         
         return patentList;
 	}
 	
-	public Date processNoticeFawenUpdateDate() throws PatentNoLoadHttpWrongException{
+	public Date processNoticeFawenUpdateDate() throws PatentNoLoadHttpWrongException, PatentPharseException{
 		Map<String, String> paramMap = new HashMap<String, String>();
 		String response = HttpClientUtils.post(SIPO_NOTICE_FAWEN_INDEX_ADDRESS, paramMap,"GBK");
 		if(StringUtils.isBlank(response)){
@@ -84,7 +89,7 @@ public class SipoPatentNoticeFawenProcessor implements IPatentNoticeFawenProcess
         }
 		String updateDateString = StringUtils.trimToNull(PatternUtils.getMatchString("(.*)最新更新日期：(.{0,20})</font></p>(.*)", response, 2));
 		if(StringUtils.isBlank(updateDateString)){
-            throw new PatentNoLoadHttpWrongException();
+            throw new PatentPharseException();
         }
 		Date updateDate = DateUtils.convertDate(updateDateString);
 		return updateDate;

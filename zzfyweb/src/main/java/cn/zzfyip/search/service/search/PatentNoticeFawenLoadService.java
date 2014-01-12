@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
@@ -56,6 +57,9 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 				logger.info("获取专利项发文通知更新时间失败，十分钟后再次获取。 ");
 				// 延迟十分钟执行
 				ThreadSleepUtils.sleepMinutes(10);
+			} catch (PatentPharseException e) {
+				logger.error("获取专利项发文通知解析更新时间失败。 ",e);
+				return;
 			}
 	    }
 	    

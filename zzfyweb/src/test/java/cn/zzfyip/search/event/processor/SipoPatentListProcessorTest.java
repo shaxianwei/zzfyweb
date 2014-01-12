@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cn.zzfyip.search.base.BaseTest;
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.event.engine.processor.IPatentListProcessor;
@@ -34,13 +35,24 @@ public class SipoPatentListProcessorTest extends BaseTest {
 			list = patentListProcessor.processPatentList(addPatentRecord);
 		} catch (PatentNoLoadHttpWrongException e) {
 			e.printStackTrace();
+		} catch (PatentPharseException e) {
+			e.printStackTrace();
 		}
 		Assert.assertEquals(list.size(), globalConstant.getPatentNoNumPerPage().intValue());
 	}
 	
 	@Test
 	public void testCountPagePatentList() {
-		Integer pageNum = patentListProcessor.countPagePatentList(DateUtils.convertDate("2010-01-06"), new Short("11"));
+		Integer pageNum = 0;
+		try {
+			pageNum = patentListProcessor.countPagePatentList(DateUtils.convertDate("2010-01-06"), new Short("11"));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (PatentNoLoadHttpWrongException e) {
+			e.printStackTrace();
+		} catch (PatentPharseException e) {
+			e.printStackTrace();
+		}
 		Assert.assertEquals(54, pageNum.intValue());
 	}
 

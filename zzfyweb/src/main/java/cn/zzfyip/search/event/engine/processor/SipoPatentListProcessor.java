@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.utils.DateUtils;
@@ -34,7 +35,7 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 	private GlobalConstant globalConstant;
 
 	@Override
-	public List<PatentMain> processPatentList(AddPatentRecord addPatentRecord) throws PatentNoLoadHttpWrongException {
+	public List<PatentMain> processPatentList(AddPatentRecord addPatentRecord) throws PatentNoLoadHttpWrongException, PatentPharseException {
 
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("recshu", globalConstant.getPatentNoNumPerPage()+"");
@@ -68,14 +69,14 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 			}
 		}
 		if(patentList.size()==0){
-			throw new PatentNoLoadHttpWrongException();
+			throw new PatentPharseException();
 		}
 		
 		return patentList;
 	}
 
 	@Override
-	public Integer countPagePatentList(Date publicDay, Short patentType) {
+	public Integer countPagePatentList(Date publicDay, Short patentType) throws PatentNoLoadHttpWrongException,PatentPharseException {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		
 		paramMap.put("recshu", "1");
@@ -88,17 +89,23 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 
 		String response = HttpClientUtils.post(SIPO_SEARCH_ADDRESS, paramMap,"GBK");
 //		logger.info("response = {}", response);
-
-		// count pageNum of the totol
-		Integer totol = 0;
-		String totolString = StringUtils.trimToNull(PatternUtils.getMatchString("(.*)共有(.*)条记录(.*)", response, 2));
-		if(NumberUtils.isDigits(totolString)){
-			totol = NumberUtils.createInteger(totolString);
-		}else{
-			return 0;
+		if(StringUtils.isBlank(response)){
+			throw new PatentNoLoadHttpWrongException();
 		}
-		
-		Integer pageNum = Math.round(totol / globalConstant.getPatentNoNumPerPage())+1;
-		return pageNum;
+		// count pageNum of the totol
+		try {
+			Integer totol = 0;
+			String totolString = StringUtils.trimToNull(PatternUtils.getMatchString("(.*)共有(.*)条记录(.*)", response, 2));
+			if(NumberUtils.isDigits(totolString)){
+				totol = NumberUtils.createInteger(totolString);
+			}else{
+				return 0;
+			}
+			
+			Integer pageNum = Math.round(totol / globalConstant.getPatentNoNumPerPage())+1;
+			return pageNum;
+		} catch (Exception e) {
+			throw new PatentPharseException(e);
+		}
 	}
 }

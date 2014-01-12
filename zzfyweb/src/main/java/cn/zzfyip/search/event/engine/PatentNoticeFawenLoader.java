@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
@@ -64,6 +65,8 @@ public class PatentNoticeFawenLoader implements Runnable {
 			} catch (InterruptedException e1) {
 				logger.error("执行专利项发文通知检索线程出错，睡眠120秒被打断", e);
 			}
+		} catch (PatentPharseException e) {
+			logger.error("执行专利项发文通知检索解析网页出错，参数"+JsonUtils.marshalToString(patentMain),e);
 		} catch (Exception e) {
 			logger.info("执行专利项发文通知检索线程出错，参数" + JsonUtils.marshalToString(patentMain));
 		}

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
@@ -67,7 +68,9 @@ public class PatentInfoLoader implements Runnable{
             }
 //            globalConstant.setPatentInfoThreadDelayMilliSeconds(globalConstant.getPatentInfoThreadDelayMilliSeconds()+100);
             
-        } catch(Exception e){
+        } catch (PatentPharseException e) {
+			logger.error("执行专利项信息检索解析网页出错，参数"+JsonUtils.marshalToString(patentMain),e);
+		} catch(Exception e){
             logger.info("执行专利项信息检索线程出错，参数"+JsonUtils.marshalToString(patentMain));
         }
         

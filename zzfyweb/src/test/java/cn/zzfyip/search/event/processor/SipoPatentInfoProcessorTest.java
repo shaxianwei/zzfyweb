@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.zzfyip.search.base.BaseTest;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
+import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.event.engine.processor.IPatentInfoProcessor;
@@ -18,15 +19,18 @@ public class SipoPatentInfoProcessorTest extends BaseTest {
 	@Test
 	public void testProcessPatentList() {
 		PatentMain patentMain = new PatentMain();
-		patentMain.setPatentNo("200710300551");
+		patentMain.setPatentNo("200880124001.X");
+		patentMain.setPatentName("电力线通信系统中用于获取包括空间和时间再用的资源共享的方法、系统、集成电路、通信模块、和计算机可读介质");
 
 		PatentInfo patentInfo = null;
         try {
             patentInfo = patentInfoProcessor.processPatentInfo(patentMain);
         } catch (PatentNoLoadHttpWrongException e) {
             e.printStackTrace();
-        }
-		Assert.assertEquals(patentInfo.getPatentName(), "苗移植机");
+        } catch (PatentPharseException e) {
+			e.printStackTrace();
+		}
+		Assert.assertEquals(patentInfo.getPatentName(), patentMain.getPatentName());
 	}
 
 }
