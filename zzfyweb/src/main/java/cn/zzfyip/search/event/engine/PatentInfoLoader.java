@@ -71,7 +71,7 @@ public class PatentInfoLoader implements Runnable{
         } catch (PatentPharseException e) {
 			logger.error("执行专利项信息检索解析网页出错，参数"+JsonUtils.marshalToString(patentMain),e);
 		} catch(Exception e){
-            logger.info("执行专利项信息检索线程出错，参数"+JsonUtils.marshalToString(patentMain));
+            logger.error("执行专利项信息检索线程出错，参数"+JsonUtils.marshalToString(patentMain)+"，patentInfo="+JsonUtils.marshalToString(patentInfo),e);
         }
         
         

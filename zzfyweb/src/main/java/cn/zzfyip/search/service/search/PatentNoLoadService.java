@@ -143,11 +143,13 @@ public class PatentNoLoadService implements InitializingBean {
 	 * 将未载入的专利项，添加到专利主表
 	 */
 	public void addUnsearchedPatentRecordToPatentMain() {
+		logger.info("---------------------开始执行专利项主表添加检索服务-------------------");
 		List<AddPatentRecord> list = patentDao.selectUnfinishedAddPatentRecord();
 
 		for (AddPatentRecord record : list) {
 			addPatentExecutor.execute(new PatentNoLoader(record, addPatentExecutor));
 		}
+		logger.info("---------------------结束执行专利项主表添加检索服务-------------------");
 	}
 
 	/**

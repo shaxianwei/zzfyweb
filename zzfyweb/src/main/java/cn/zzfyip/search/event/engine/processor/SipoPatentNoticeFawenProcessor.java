@@ -48,7 +48,7 @@ public class SipoPatentNoticeFawenProcessor implements IPatentNoticeFawenProcess
 			String[] responseArrays = response.split("<tr onMouseOver=");
 			int sequnceNo = 0;
 			for(String responsePart:responseArrays){
-			    String pattenString = "(.*)<td height=\"27\" class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>\r\n          <td class=\"dixian1\" align=\"center\">　([^<]*)</td>(.*)";
+			    String pattenString = "(.*)<td height=\"27\" class=\"dixian1\" align=\"center\">　(.*?)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*?)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*?)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*?)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*?)</td>\r\n          <td class=\"dixian1\" align=\"center\">　(.*?)</td>(.*)";
 			    String noticeDateString = StringUtils.trimToNull(PatternUtils.getMatchString(pattenString, responsePart, 2));
 			    if(StringUtils.isBlank(noticeDateString)){
 			    	continue;

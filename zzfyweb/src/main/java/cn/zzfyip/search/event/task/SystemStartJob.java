@@ -37,19 +37,19 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 			logger.info("Spring容器启动完毕，加载系统检索线程");
 			ExecutorService jobExecutor = Executors.newFixedThreadPool(3, new NamedThreadFactory("patent-JOB-dispatcher", true));
 			
-//			jobExecutor.execute(new Runnable() {
-//				@Override
-//				public void run() {
-//					patentNoLoadService.addUnsearchedPatentRecordToPatentMainJob();
-//				}
-//			});
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					patentNoLoadService.addUnsearchedPatentRecordToPatentMainJob();
+				}
+			});
 			
-//			jobExecutor.execute(new Runnable() {
-//				@Override
-//				public void run() {
-//					patentInfoLoadService.searchPatentInfoJob();
-//				}
-//			});
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					patentInfoLoadService.searchPatentInfoJob();
+				}
+			});
 			
 //			jobExecutor.execute(new Runnable() {
 //				@Override

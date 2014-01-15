@@ -59,16 +59,16 @@ public class PatentNoticeFawenLoader implements Runnable {
             
 		} catch (PatentNoLoadHttpWrongException e) {
 //			globalConstant.setPatentFawenThreadDelayMilliSeconds(globalConstant.getPatentFawenThreadDelayMilliSeconds()+100);
-			logger.info("执行专利项发文通知检索线程出错，提升单线程检索等待时间为{}毫秒，结束线程池并睡眠120秒，参数{}" ,globalConstant.getPatentFawenThreadDelayMilliSeconds(),JsonUtils.marshalToString(patentMain));
+			logger.info("执行专利项发文通知检索线程出错，提升单线程检索等待时间为{}毫秒，结束线程池并睡眠300秒，参数{}" ,globalConstant.getPatentFawenThreadDelayMilliSeconds(),JsonUtils.marshalToString(patentMain));
 			try {
-				patentNoticeFawenExecutor.awaitTermination(120, TimeUnit.SECONDS);
+				patentNoticeFawenExecutor.awaitTermination(300, TimeUnit.SECONDS);
 			} catch (InterruptedException e1) {
-				logger.error("执行专利项发文通知检索线程出错，睡眠120秒被打断", e);
+				logger.error("执行专利项发文通知检索线程出错，睡眠300秒被打断", e);
 			}
 		} catch (PatentPharseException e) {
 			logger.error("执行专利项发文通知检索解析网页出错，参数"+JsonUtils.marshalToString(patentMain),e);
 		} catch (Exception e) {
-			logger.info("执行专利项发文通知检索线程出错，参数" + JsonUtils.marshalToString(patentMain));
+			logger.error("执行专利项发文通知检索线程出错，参数" + JsonUtils.marshalToString(patentMain),e);
 		}
 
 		logger.info("结束执行专利项发文通知检索线程，PatentMain={}，PatentInfo={}", JsonUtils.marshalToString(patentMain), JsonUtils.marshalToString(list));

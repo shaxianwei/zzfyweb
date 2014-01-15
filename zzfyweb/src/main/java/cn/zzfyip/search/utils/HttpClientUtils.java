@@ -91,8 +91,8 @@ public class HttpClientUtils {
 
     static {
         HttpClientUtils.connectionManager = new PoolingClientConnectionManager();
-        HttpClientUtils.connectionManager.setDefaultMaxPerRoute(3);
-        HttpClientUtils.connectionManager.setMaxTotal(20);
+        HttpClientUtils.connectionManager.setDefaultMaxPerRoute(100);
+        HttpClientUtils.connectionManager.setMaxTotal(200);
         HttpParams defaultParams = new SyncBasicHttpParams();
 
         defaultParams.setParameter(CoreConnectionPNames.SO_TIMEOUT, HttpClientUtils.READ_TIMEOUT);
