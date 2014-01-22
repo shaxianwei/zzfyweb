@@ -56,6 +56,7 @@ public class PatentNoLoadService implements InitializingBean {
 	 * @throws PatentNoLoadHttpWrongException 
 	 */
 	public void createAddPatentRecord() {
+		logger.info("---------------------开始执行专利项添加任务服务-------------------");
 		try {
 			Date today = new Date();
 			Date addEndDay = DateUtils.addDay(today, -30);
@@ -78,7 +79,7 @@ public class PatentNoLoadService implements InitializingBean {
 		} catch (PatentPharseException e) {
 			logger.error("添加专利项添加任务解析出错",e);
 		}
-
+		logger.info("---------------------结束执行专利项添加任务服务-------------------");
 	}
 
 	/**
@@ -152,6 +153,23 @@ public class PatentNoLoadService implements InitializingBean {
 		logger.info("---------------------结束执行专利项主表添加检索服务-------------------");
 	}
 
+	/**
+	 * 将未载入的专利项，添加到专利主表
+	 */
+	public void addPatentRecordJob() {
+		// 延迟一分钟执行
+		ThreadSleepUtils.sleepMinutes(1);
+		
+		while (true) {
+			try {
+				this.createAddPatentRecord();
+			} catch (Exception e) {
+				logger.error("执行专利项任务添加 JOB 失败", e);
+			}
+			
+			ThreadSleepUtils.sleepHours(2);
+		}
+	}
 	/**
 	 * 将未载入的专利项，添加到专利主表
 	 */
