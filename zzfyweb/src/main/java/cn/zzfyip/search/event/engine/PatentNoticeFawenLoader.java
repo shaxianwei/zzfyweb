@@ -87,11 +87,12 @@ public class PatentNoticeFawenLoader implements Runnable {
 		if(isChehui(fawenList)){
 			patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
 			patentMain.setPatentStatus(PatentConstants.STATUS_05_CHEHUI);
-		}else if(isShizhi(fawenList)){
+		}else if(isNoticeDabian(fawenList)){
+			patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_02_DABIAN);
+		}
+			
+		if(isShizhi(fawenList)){
 			patentMain.setPatentStatus(PatentConstants.STATUS_03_SHENCHA);
-			if(isNoticeDabian(fawenList)){
-				patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_02_DABIAN);
-			}
 		}
 		
 		if(isBohui(fawenList)){
@@ -109,7 +110,7 @@ public class PatentNoticeFawenLoader implements Runnable {
 	 */
 	private Boolean isChehui(List<PatentNoticeFawen> fawenList){
     	for(PatentNoticeFawen fawen:fawenList){
-    		if("20108".equals(fawen.getNoticeCode())||"20109".equals(fawen.getNoticeCode())||"21230".equals(fawen.getNoticeCode())||"21249".equals(fawen.getNoticeCode())||"21105".equals(fawen.getNoticeCode())||"200022".equals(fawen.getNoticeCode())||"200602".equals(fawen.getNoticeCode())){
+    		if("200022".equals(fawen.getNoticeCode())||"200602".equals(fawen.getNoticeCode())){
     			return true;
     		}
     	}
@@ -125,7 +126,7 @@ public class PatentNoticeFawenLoader implements Runnable {
 	 */
 	private Boolean isShizhi(List<PatentNoticeFawen> fawenList){
 		for(PatentNoticeFawen fawen:fawenList){
-			if("21231".equals(fawen.getNoticeCode())||"21229".equals(fawen.getNoticeCode())){
+			if("210307".equals(fawen.getNoticeCode())||"210308".equals(fawen.getNoticeCode())){
 				return true;
 			}
 		}
@@ -135,27 +136,17 @@ public class PatentNoticeFawenLoader implements Runnable {
 	
 	/**
 	 * 通过发文识别，专利有答辩通知的发文<br>
-	 * 规则： 在20108，20109发文通知之后，有一条空白的发文情况的，该条属于答辩意见通知书
+	 * 210401,210402,210403
 	 * 
 	 * @param fawenList
 	 * @return
 	 */
 	private Boolean isNoticeDabian(List<PatentNoticeFawen> fawenList){
-		int sequenceNo = -1;
 		for(PatentNoticeFawen fawen:fawenList){
-			if("20108".equals(fawen.getNoticeCode())||"20109".equals(fawen.getNoticeCode())||"21230".equals(fawen.getNoticeCode())||"21249".equals(fawen.getNoticeCode())||"21105".equals(fawen.getNoticeCode())){
-				sequenceNo = fawen.getSequnceNo();
+			if("210401".equals(fawen.getNoticeCode())||"210402".equals(fawen.getNoticeCode())||"210403".equals(fawen.getNoticeCode())){
+				return true;
 			}
 		}
-		
-		if(sequenceNo!=-1){
-			for(PatentNoticeFawen fawen:fawenList){
-				if((sequenceNo+1) == fawen.getSequnceNo()&&StringUtils.isBlank(fawen.getNoticeCode())){
-					return true;
-				}
-			}
-		}
-		
 		return false;
 	}
 	
@@ -167,13 +158,11 @@ public class PatentNoticeFawenLoader implements Runnable {
 	 */
 	private Boolean isBohui(List<PatentNoticeFawen> fawenList){
 		for(PatentNoticeFawen fawen:fawenList){
-			if("210407".equals(fawen.getNoticeCode())){
+			if("210407".equals(fawen.getNoticeCode())||"210408".equals(fawen.getNoticeCode())){
 				return true;
 			}
 		}
 		
 		return false;
 	}
-	
-	
 }

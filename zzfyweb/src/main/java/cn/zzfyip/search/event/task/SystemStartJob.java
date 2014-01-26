@@ -47,16 +47,23 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 			jobExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
+					patentNoLoadService.addUnsearchedPatentRecordToPatentMainJob();
+				}
+			});
+			
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
 					patentInfoLoadService.searchPatentInfoJob();
 				}
 			});
 			
-//			jobExecutor.execute(new Runnable() {
-//				@Override
-//				public void run() {
-//					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
-//				}
-//			});
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
+				}
+			});
 	    } 
 	}
 }

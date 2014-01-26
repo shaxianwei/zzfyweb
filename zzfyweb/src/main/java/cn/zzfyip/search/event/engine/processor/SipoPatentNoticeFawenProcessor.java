@@ -44,6 +44,11 @@ public class SipoPatentNoticeFawenProcessor implements IPatentNoticeFawenProcess
         //      logger.info("response = {}", response);
         List<PatentNoticeFawen> patentList = new ArrayList<PatentNoticeFawen>();
         
+        //如果该文还没有通知书
+        if(StringUtils.contains(response, "暂时没有该申请号的通知书发文信息")){
+        	return patentList;
+        }
+        
         try {
 			String[] responseArrays = response.split("<tr onMouseOver=");
 			int sequnceNo = 0;

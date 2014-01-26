@@ -26,7 +26,8 @@ public class SipoPatentNoticeFawenProcessorTest extends BaseTest {
 	@Test
 	public void testProcessPatentNoticeFawen() {
 		PatentMain patentMain = new PatentMain();
-		patentMain.setPatentNo("200530006229.8");
+//		patentMain.setPatentNo("200530006229.8");
+		patentMain.setPatentNo("200910303829.8");
 
 		List<PatentNoticeFawen> list = Collections.emptyList();
 		try {
@@ -36,7 +37,7 @@ public class SipoPatentNoticeFawenProcessorTest extends BaseTest {
 		} catch (PatentPharseException e) {
 			e.printStackTrace();
 		}
-		Assert.assertEquals(list.size(), 4);
+		Assert.assertEquals(list.size(), 3);
 	}
 	
 	@Test
