@@ -11,8 +11,6 @@ public class PatentConstants {
 	public static String STATUS_03_SHENCHA = "SHENCHA";
 	public static String STATUS_04_SHOUQUAN = "SHOUQUAN";
 	public static String STATUS_05_CHEHUI = "CHEHUI";
-	public static String STATUS_06_ZHONGZHI = "ZHONGZHI";
-	public static String STATUS_07_WUXIAO = "WUXIAO";
 	
 	/**
 	 * 发文检索状态：正常状态，需要检索

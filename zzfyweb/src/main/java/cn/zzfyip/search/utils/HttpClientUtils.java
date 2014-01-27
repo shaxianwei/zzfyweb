@@ -261,4 +261,9 @@ public class HttpClientUtils {
 
     private HttpClientUtils() {
     }
+    
+    public static void main(String[] args){
+    	System.out.println(HttpClientUtils.urlDecode("%C9%EA%C7%EB%BA%C5%3D91231422%25+", "GBK"));
+    	System.out.println(HttpClientUtils.urlEncode("申请号=91231422", "GBK"));
+    }
 }
