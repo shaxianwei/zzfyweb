@@ -51,7 +51,19 @@ public class GlobalConstant {
     @Value("${patentFawen.threadDelayMilliSeconds}")
     private Integer patentFawenThreadDelayMilliSeconds;
     
-
+    @Value("${patentLawStatus.searchThreadNum}")
+    private Integer patentLawStatusSearchThreadNum;
+    
+    @Value("${patentLawStatus.threadDelayMilliSeconds}")
+    private Integer patentLawStatusThreadDelayMilliSeconds;
+    
+    @Value("${patentWuxiaoFee.searchThreadNum}")
+    private Integer patentWuxiaoFeeSearchThreadNum;
+    
+    @Value("${patentWuxiaoFee.threadDelayMilliSeconds}")
+    private Integer patentWuxiaoFeeThreadDelayMilliSeconds;
+    
+    
 	public String getDbJdbcurl() {
 		return dbJdbcurl;
 	}
@@ -125,5 +137,20 @@ public class GlobalConstant {
 		return patentFawenThreadDelayMilliSeconds;
 	}
 
-    
+	public Integer getPatentLawStatusSearchThreadNum() {
+		return patentLawStatusSearchThreadNum;
+	}
+
+	public Integer getPatentLawStatusThreadDelayMilliSeconds() {
+		return patentLawStatusThreadDelayMilliSeconds;
+	}
+
+	public Integer getPatentWuxiaoFeeSearchThreadNum() {
+		return patentWuxiaoFeeSearchThreadNum;
+	}
+
+	public Integer getPatentWuxiaoFeeThreadDelayMilliSeconds() {
+		return patentWuxiaoFeeThreadDelayMilliSeconds;
+	}
+
 }

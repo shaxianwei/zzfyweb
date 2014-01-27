@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.service.search.PatentInfoLoadService;
+import cn.zzfyip.search.service.search.PatentLawStatusLoadService;
 import cn.zzfyip.search.service.search.PatentNoLoadService;
 import cn.zzfyip.search.service.search.PatentNoticeFawenLoadService;
 
@@ -28,6 +29,9 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 	@Autowired
 	PatentNoticeFawenLoadService patentNoticeFawenLoadService;
 	
+	@Autowired
+	PatentLawStatusLoadService patentLawStatusLoadService;
+	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		//root application context
@@ -35,7 +39,7 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 			
 	         //需要执行的逻辑代码，当spring容器初始化完成后就会执行该方法。 安全起见，延迟两分钟启动。
 			logger.info("Spring容器启动完毕，加载系统检索线程");
-			ExecutorService jobExecutor = Executors.newFixedThreadPool(5, new NamedThreadFactory("patent-JOB-dispatcher", true));
+			ExecutorService jobExecutor = Executors.newFixedThreadPool(10, new NamedThreadFactory("patent-JOB-dispatcher", true));
 			
 			jobExecutor.execute(new Runnable() {
 				@Override
@@ -62,6 +66,13 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 				@Override
 				public void run() {
 					patentNoticeFawenLoadService.searchPatentNoticeFawenJob();
+				}
+			});
+			
+			jobExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					patentLawStatusLoadService.searchPatentLawStatusJob();
 				}
 			});
 	    } 

@@ -27,7 +27,6 @@
 		<property name="triggers">
 			<list>
 				<ref bean="sampleTrigger" />
-				<ref bean="addPatentNoJobTrigger" />
 			</list>
 		</property>
 		<property name="autoStartup" value="true" />
@@ -50,14 +49,14 @@
 	<!-- ======================================= -->
 	<!-- JOB2: 专利项加载定时任务，每天凌晨7点执行一次            -->
 	<!-- ======================================= -->
-	<bean id="addPatentNoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	<!-- <bean id="addPatentNoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="sampleJobDetail" />
-		<property name="cronExpression" value="0 0 7 * * ?" />
+		<property name="cronExpression" value="* */6 * * * ?" />
 	</bean>
 	<bean id="addPatentNoJobDetail"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="patentNoLoadService" />
 		<property name="targetMethod" value="createAddPatentRecord" />
 		<property name="concurrent" value="false" />
-	</bean>
+	</bean> -->
 </beans>

@@ -19,7 +19,8 @@
 	</select>
 
 	<select id="selectFirst100RecordPatentInfoSearchPatentMain" resultMap="BaseResultMap">
-		SELECT * FROM public.patent_main where patent_no not in (select patent_no from patent_info) order by patent_type,public_date limit 100;
+		SELECT patent_main.* FROM public.patent_main left join patent_info on patent_main.patent_no= patent_info.patent_no
+			where patent_info.patent_no is null order by patent_main.patent_type,patent_main.public_date limit 100;;
 	</select>
 	
 	<select id="selectFirst100RecordPatentNoticeFawenSearchPatentMain" parameterType="map" resultMap="BaseResultMap">

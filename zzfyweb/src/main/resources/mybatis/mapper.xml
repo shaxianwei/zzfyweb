@@ -23,7 +23,6 @@
 		<mapper resource="mybatis/PatentMainMapper.xml" />
 		<mapper resource="mybatis/PatentInfoMapper.xml" />
 		<mapper resource="mybatis/PatentNoticeFawenMapper.xml" />
-		<mapper resource="mybatis/PatentFeeMapper.xml" />
 		
 		<!-- business dao -->
 		<mapper resource="mybatis/BusinessPatentMapper.xml" />

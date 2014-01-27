@@ -21,9 +21,10 @@
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 		
-		<table schema="public" tableName="PATENT_NOTICE_FAWEN" ></table>
-		<!-- 
 		<table schema="public" tableName="PATENT_MAIN" ></table>
+		<!-- 
+		<table schema="public" tableName="PATENT_NOTICE_FAWEN" ></table>
+		
 		<table schema="public" tableName="ADD_PATENT_RECORD" ></table>
 		<table schema="public" tableName="PATENT_INFO" ></table>
 		<table schema="public" tableName="PATENT_FEE" ></table> -->

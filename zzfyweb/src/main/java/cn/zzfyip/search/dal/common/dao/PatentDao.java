@@ -87,8 +87,11 @@ public class PatentDao {
 	public void refreshPatentNoticeFawenByPatentNo(String patentNo,List<PatentNoticeFawen> list){
 	    PatentNoticeFawenExample example = new PatentNoticeFawenExample();
 	    example.createCriteria().andPatentNoEqualTo(patentNo);
+	    Integer patentFawenCount = patentNoticeFawenMapper.countByExample(example);
+	    if(patentFawenCount.intValue()==list.size()){
+	    	return;
+	    }
 	    patentNoticeFawenMapper.deleteByExample(example);
-	    
 	    for(PatentNoticeFawen record:list){
 	        patentNoticeFawenMapper.insertSelective(record);
 	    }
@@ -100,5 +103,9 @@ public class PatentDao {
 	    
 	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain",paramMap);
     }
+	
+	public List<PatentMain> selectFirst100RecordPatentLawStatusSearchPatentMain(){
+		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentLawStatusSearchPatentMain");
+	}
 	
 }
