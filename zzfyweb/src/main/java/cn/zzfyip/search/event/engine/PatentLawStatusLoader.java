@@ -1,5 +1,6 @@
 package cn.zzfyip.search.event.engine;
 
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +53,7 @@ public class PatentLawStatusLoader implements Runnable{
         	
         	if(StringUtils.isNotBlank(lawStatus)){
         		patentMain.setPatentStatus(lawStatus);
+        		patentMain.setPatentLawStatusSearchTime(new Date());
         		if(StringUtils.equals(PatentConstants.STATUS_05_CHEHUI, lawStatus)){
         			patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
         		}
