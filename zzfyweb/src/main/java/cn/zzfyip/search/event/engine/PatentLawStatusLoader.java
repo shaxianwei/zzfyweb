@@ -53,12 +53,13 @@ public class PatentLawStatusLoader implements Runnable{
         	
         	if(StringUtils.isNotBlank(lawStatus)){
         		patentMain.setPatentStatus(lawStatus);
-        		patentMain.setPatentLawStatusSearchTime(new Date());
         		if(StringUtils.equals(PatentConstants.STATUS_05_CHEHUI, lawStatus)){
         			patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
         		}
-        		patentDao.updatePatentMain(patentMain);
         	}
+        	
+        	patentMain.setPatentLawStatusSearchTime(new Date());
+        	patentDao.updatePatentMain(patentMain);
         	
             ThreadSleepUtils.sleepMilliSeconds(globalConstant.getPatentLawStatusThreadDelayMilliSeconds());
             
