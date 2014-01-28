@@ -66,6 +66,7 @@ public class SipoPatentListProcessor implements IPatentListProcessor{
 				patentMain.setPatentStatus(PatentConstants.STATUS_01_INIT);
 				patentMain.setPatentType(addPatentRecord.getPatentType());
 				patentMain.setPatentFeeWuxiaoSearchTime(DateUtils.convertDate(0L));
+				patentMain.setPatentLawStatusSearchTime(DateUtils.convertDate(0L));
 				patentList.add(patentMain);
 			}
 		}
