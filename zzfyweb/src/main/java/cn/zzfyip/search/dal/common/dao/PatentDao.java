@@ -9,16 +9,22 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecordExample;
 import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
+import cn.zzfyip.search.dal.common.entity.PatentMainExample;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawen;
 import cn.zzfyip.search.dal.common.entity.PatentNoticeFawenExample;
+import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
+import cn.zzfyip.search.dal.common.entity.PatentStatisticJobExample;
 import cn.zzfyip.search.dal.common.mapper.AddPatentRecordMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentInfoMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentMainMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentNoticeFawenMapper;
+import cn.zzfyip.search.dal.common.mapper.PatentStatisticJobMapper;
+import cn.zzfyip.search.dal.common.vo.PatentFawenVo;
 import cn.zzfyip.search.utils.DateUtils;
 
 @Repository
@@ -39,9 +45,17 @@ public class PatentDao {
 	@Autowired
 	PatentNoticeFawenMapper patentNoticeFawenMapper;
 	
+	@Autowired
+	PatentStatisticJobMapper patentStatisticJobMapper;
+	
 	public Date selectMaxPublicDateInPatentMain(){
 		Date maxPublicDate = sqlSession.selectOne("cn.zzfyip.search.dal.common.dao.PatentDao.selectMaxPublicDateInPatentMain");
 		return maxPublicDate;
+	}
+	
+	public Date selectMaxFawenUpdateDateInPatentMain(){
+		Date maxFawenUPdateDate = sqlSession.selectOne("cn.zzfyip.search.dal.common.dao.PatentDao.selectMaxFawenUpdateDate");
+		return maxFawenUPdateDate;
 	}
 	
 	public void insertAddPatentRecord(AddPatentRecord record){
@@ -69,6 +83,12 @@ public class PatentDao {
 	
 	public PatentMain selectPatentMainByPatentNo(String patentNo){
 		return patentMainMapper.selectByPrimaryKey(patentNo);
+	}
+	
+	public Integer selectCountNotFinishedPatentMainByUpdateDate(Date fawenUpdateDate){
+		PatentMainExample example = new PatentMainExample();
+		example.createCriteria().andPatentFawenSearchTypeEqualTo(PatentConstants.FAWEN_STATUS_01_NORMAL).andPatentFawenSearchTimeNotEqualTo(fawenUpdateDate);
+		return patentMainMapper.countByExample(example);
 	}
 	
 	public List<PatentMain> selectFirst100RecordPatentInfoSearchPatentMain(){
@@ -108,4 +128,29 @@ public class PatentDao {
 		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentLawStatusSearchPatentMain");
 	}
 	
+	public void insertPatentStatisticJobRecord(PatentStatisticJob record){
+		patentStatisticJobMapper.insertSelective(record);
+	}
+	public void updatePatentStatisticJobRecord(PatentStatisticJob record){
+		patentStatisticJobMapper.updateByPrimaryKeySelective(record);
+	}
+	
+	public Integer selectCountPatentStatisticJobByFawenUpdateDate(Date updateDate){
+		PatentStatisticJobExample example = new PatentStatisticJobExample();
+		example.createCriteria().andFawenUpdateDateEqualTo(updateDate);
+		return patentStatisticJobMapper.countByExample(example);
+	}
+	
+	public List<PatentStatisticJob> selectInitFawenPatentStatisticJobList(){
+		PatentStatisticJobExample example = new PatentStatisticJobExample();
+		example.createCriteria().andJobStatusEqualTo("INIT").andJobTypeEqualTo("FAWEN");
+		return patentStatisticJobMapper.selectByExample(example);
+	}
+	
+	public List<PatentFawenVo> selectPatentFawenVoListByFawenUpdateDate(Date fawenUpdateDate){
+		Map<String,String> paramMap = new HashMap<String,String>();
+        paramMap.put("fawenUpdateDate", DateUtils.formatDate(fawenUpdateDate));
+	    
+	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFawenStatisticData",paramMap);
+	}
 }

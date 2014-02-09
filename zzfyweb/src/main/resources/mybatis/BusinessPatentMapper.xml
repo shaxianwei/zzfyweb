@@ -17,6 +17,30 @@
 	    <result column="patent_fee_wuxiao_search_time" property="patentFeeWuxiaoSearchTime" jdbcType="TIMESTAMP" />
 	    <result column="patent_law_status_search_time" property="patentLawStatusSearchTime" jdbcType="TIMESTAMP" />
 	</resultMap>
+	
+	<resultMap id="PatentFawenVo" type="cn.zzfyip.search.dal.common.vo.PatentFawenVo" >
+	    <id column="patent_no" property="patentNo" jdbcType="VARCHAR" />
+	    <result column="apply_date" property="applyDate" jdbcType="TIMESTAMP" />
+	    <result column="patent_name" property="patentName" jdbcType="VARCHAR" />
+	    <result column="public_no" property="publicNo" jdbcType="VARCHAR" />
+	    <result column="public_date" property="publicDate" jdbcType="TIMESTAMP" />
+	    <result column="main_category_no" property="mainCategoryNo" jdbcType="VARCHAR" />
+	    <result column="pre_apply_no" property="preApplyNo" jdbcType="VARCHAR" />
+	    <result column="sec_category_no" property="secCategoryNo" jdbcType="VARCHAR" />
+	    <result column="certificate_date" property="certificateDate" jdbcType="TIMESTAMP" />
+	    <result column="pre_right" property="preRight" jdbcType="VARCHAR" />
+	    <result column="applier" property="applier" jdbcType="VARCHAR" />
+	    <result column="address" property="address" jdbcType="VARCHAR" />
+	    <result column="inventor" property="inventor" jdbcType="VARCHAR" />
+	    <result column="global_patent" property="globalPatent" jdbcType="VARCHAR" />
+	    <result column="global_public" property="globalPublic" jdbcType="VARCHAR" />
+	    <result column="entry_country_date" property="entryCountryDate" jdbcType="TIMESTAMP" />
+	    <result column="agency" property="agency" jdbcType="VARCHAR" />
+	    <result column="agent" property="agent" jdbcType="VARCHAR" />
+	    <result column="summary" property="summary" jdbcType="VARCHAR" />
+	    <result column="add_date" property="addDate" jdbcType="TIMESTAMP" />
+	    <result column="fawen_info" property="fawenInfo" jdbcType="VARCHAR" />
+	</resultMap>
 
 	<select id="selectMaxPublicDateInPatentMain" resultType="java.util.Date">
 		select
@@ -37,6 +61,30 @@
 	<select id="selectFirst100RecordPatentLawStatusSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
 		<![CDATA[
 			SELECT * FROM public.patent_main where patent_status not in ('CHEHUI') order by patent_law_status_search_time,patent_main.patent_type,patent_main.public_date  limit 100;
+		]]>
+	</select>
+	<select id="selectFawenStatisticData" parameterType="map" resultMap="PatentFawenVo">
+		<![CDATA[
+			select array_to_string
+			        (
+			        ARRAY   (
+			                SELECT to_char(notice_date, 'YYYY-MM-DD')||','||COALESCE(notice_code,'')||','||COALESCE(receiver,'')||','||COALESCE(address,'')
+			                FROM patent_notice_fawen
+			                WHERE patent_main.patent_no = patent_notice_fawen.patent_no order by sequnce_no desc
+			                ),
+			        ';\r\n'
+			        ) AS fawen_info,
+                    patent_info.*
+			 from patent_main
+             left join patent_info on patent_main.patent_no=patent_info.patent_no
+            where patent_fawen_search_type='DABIAN' and patent_fawen_search_time='2014-01-26' order by public_date
+			;
+		]]>
+	</select>
+	
+	<select id="selectMaxFawenUpdateDate" resultType="java.util.Date">
+		<![CDATA[
+			select max(patent_fawen_search_time) from patent_main;
 		]]>
 	</select>
 

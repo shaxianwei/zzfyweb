@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.zzfyip.search.common.support.StandardJsonObject;
+import cn.zzfyip.search.event.task.DailyStatisticTask;
 import cn.zzfyip.search.service.search.PatentInfoLoadService;
 import cn.zzfyip.search.service.search.PatentNoLoadService;
 import cn.zzfyip.search.service.search.PatentNoticeFawenLoadService;
@@ -40,6 +41,9 @@ public class ToolboxController {
 	
 	@Autowired
 	PatentNoticeFawenLoadService patentNoticeFawenLoadService;
+	
+	@Autowired
+	DailyStatisticTask dailyStatisticTask;
 	
     @ResponseBody
     @RequestMapping(params = "method=createAddPatentRecord", method = { RequestMethod.GET })
@@ -79,6 +83,14 @@ public class ToolboxController {
     public StandardJsonObject searchPatentNoticeFawen()
     		throws Exception {
     	patentNoticeFawenLoadService.searchPatentNoticeFawen();
+    	return StandardJsonObject.newCorrectJsonObject();
+    }
+    
+    @ResponseBody
+    @RequestMapping(params = "method=doStatisticJob", method = { RequestMethod.GET })
+    public StandardJsonObject doStatisticJob()
+    		throws Exception {
+    	dailyStatisticTask.runJob();
     	return StandardJsonObject.newCorrectJsonObject();
     }
 

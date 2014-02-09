@@ -21,6 +21,9 @@ import org.springframework.stereotype.Component;
 @Lazy(false)
 public class GlobalConstant {
 
+    @Value("${basePath}")
+    private String basePath;
+    
     @Value("${dbJdbcurl}")
     private String dbJdbcurl;
 
@@ -63,37 +66,24 @@ public class GlobalConstant {
     @Value("${patentWuxiaoFee.threadDelayMilliSeconds}")
     private Integer patentWuxiaoFeeThreadDelayMilliSeconds;
     
-    
-	public String getDbJdbcurl() {
-		return dbJdbcurl;
+	public String getBasePath() {
+		return basePath;
 	}
 
-	public void setDbJdbcurl(String dbJdbcurl) {
-		this.dbJdbcurl = dbJdbcurl;
+	public String getDbJdbcurl() {
+		return dbJdbcurl;
 	}
 
 	public String getDbUsername() {
 		return dbUsername;
 	}
 
-	public void setDbUsername(String dbUsername) {
-		this.dbUsername = dbUsername;
-	}
-
 	public String getDbPassword() {
 		return dbPassword;
 	}
 
-	public void setDbPassword(String dbPassword) {
-		this.dbPassword = dbPassword;
-	}
-
 	public String getPatentNoFromDate() {
 		return patentNoFromDate;
-	}
-
-	public void setPatentNoFromDate(String patentNoFromDate) {
-		this.patentNoFromDate = patentNoFromDate;
 	}
 
 	public Integer getPatentNoNumPerPage() {

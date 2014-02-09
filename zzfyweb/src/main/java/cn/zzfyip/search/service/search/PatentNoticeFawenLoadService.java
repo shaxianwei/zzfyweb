@@ -18,8 +18,10 @@ import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
+import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
 import cn.zzfyip.search.event.engine.PatentNoticeFawenLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
+import cn.zzfyip.search.event.task.DailyStatisticTask;
 import cn.zzfyip.search.utils.ThreadSleepUtils;
 
 @Service
@@ -38,6 +40,9 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	@Autowired
 	private PatentDao patentDao;
 	
+	@Autowired
+	private DailyStatisticTask dailyStatisticTask;
+	
 	private ExecutorService patentNoticeFawenExecutor;
 
 	@Override
@@ -52,7 +57,15 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 		while (fawenUpdateDate == null){
 	    	try {
 				fawenUpdateDate = sipoPatentNoticeFawenProcessor.processNoticeFawenUpdateDate();
-			} catch (PatentNoLoadHttpWrongException e) {
+				Integer jobCount = patentDao.selectCountPatentStatisticJobByFawenUpdateDate(fawenUpdateDate);
+				if(jobCount==0){
+					PatentStatisticJob job = new PatentStatisticJob();
+					job.setJobStatus("INIT");
+					job.setJobType("FAWEN");
+					job.setFawenUpdateDate(fawenUpdateDate);
+					patentDao.insertPatentStatisticJobRecord(job);
+				}
+	    	} catch (PatentNoLoadHttpWrongException e) {
 				logger.info("获取专利项发文通知更新时间失败，十分钟后再次获取。 ");
 				// 延迟十分钟执行
 				ThreadSleepUtils.sleepMinutes(10);
@@ -77,6 +90,7 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	        logger.info("执行专利项发文通知检索服务，本分页执行完成。 ");
 	        list = patentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain(fawenUpdateDate);
 	    }
+	    
 	    logger.info("---------------------完成执行专利项发文通知检索服务-------------------");
 	    	    
 	}
@@ -89,12 +103,13 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 		while (true) {
 			try {
 				this.searchPatentNoticeFawen();
+				dailyStatisticTask.runJob();
 			} catch (Exception e) {
 				logger.error("执行专利项发文通知检索服务 JOB 失败", e);
 			}
 
-			//下次任务检测2小时候进行
-			ThreadSleepUtils.sleepHours(2);
+			//下次任务检测4小时候进行
+			ThreadSleepUtils.sleepHours(4);
 		}
 	}
 	
