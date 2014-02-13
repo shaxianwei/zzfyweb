@@ -3,10 +3,12 @@ package cn.zzfyip.search.service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
+import java.io.PrintWriter;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -21,6 +23,7 @@ import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
 import cn.zzfyip.search.dal.common.vo.PatentFawenVo;
 import cn.zzfyip.search.utils.DateUtils;
+import cn.zzfyip.search.utils.ZipUtils;
 
 @Service
 public class ReportService {
@@ -37,14 +40,24 @@ public class ReportService {
 	PatentDao patentDao;
 	
 	public void generateFawenReport(PatentStatisticJob job){
-		HSSFWorkbook workbook = new HSSFWorkbook();
 		List<PatentFawenVo> list = patentDao.selectPatentFawenVoListByFawenUpdateDate(job.getFawenUpdateDate());
-		createFawenSheet(workbook,list);
 		
+		//XSL file
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		createFawenSheet(workbook,list);
 		String fileName = String.format("(%s)_fawen_report.xls", DateUtils.formatDate(job.getFawenUpdateDate()));
 		writeExcelToFile(workbook, fileName);
 		
-		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName);
+		//TXT file
+		String fileName2 = String.format("(%s)_fawen_report.txt", DateUtils.formatDate(job.getFawenUpdateDate()));
+		writeTxtToFile(list, fileName2);
+		
+		//ZIP these files
+		zipFile(fileName,fileName2);
+		
+		String zipFileName = String.format("(%s)_fawen_report.zip", DateUtils.formatDate(job.getFawenUpdateDate()));
+		
+		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2);
 		
 		job.setJobStatus("FINISH");
 		patentDao.updatePatentStatisticJobRecord(job);
@@ -201,4 +214,55 @@ public class ReportService {
         
         return sheet;
     }
+	
+	private void writeTxtToFile(List<PatentFawenVo> list,String fileName){
+		try {
+			PrintWriter pw = new PrintWriter( new FileWriter( globalConstant.getBasePath() + "temp/" +fileName) );
+			String lineSeparators ="\r\n----------------------------------------------------------------\r\n";
+			pw.println(fileName);
+			pw.println(lineSeparators);
+			for(PatentFawenVo vo:list){
+				pw.println("专利号："+vo.getPatentNo());
+				pw.println("发文通知内容：");
+				if(StringUtils.isNotBlank(vo.getFawenInfo())){
+					String[] fawenLines = StringUtils.split(vo.getFawenInfo(), ";");
+					for(String fawenLine:fawenLines){
+						pw.println(fawenLine+";");
+					}
+				}
+				pw.println("申请日："+DateUtils.formatDate(vo.getApplyDate()));
+				pw.println("名称："+vo.getPatentName());
+				pw.println("公开(公告)号："+vo.getPublicNo());
+				pw.println("公开(公告)日："+DateUtils.formatDate(vo.getPublicDate()));
+				pw.println("主分类号："+vo.getMainCategoryNo());
+				pw.println("分案原申请号："+vo.getPreApplyNo());
+				pw.println("分类号："+vo.getSecCategoryNo());
+				pw.println("颁证日："+DateUtils.formatDate(vo.getCertificateDate()));
+				pw.println("优先权："+vo.getPreRight());
+				pw.println("申请(专利权)人："+vo.getApplier());
+				pw.println("地址："+vo.getAddress());
+				pw.println("发明(设计)人："+vo.getInventor());
+				pw.println("国际申请："+vo.getGlobalPatent());
+				pw.println("国际公布："+vo.getGlobalPublic());
+				pw.println("进入国家日期："+DateUtils.formatDate(vo.getEntryCountryDate()));
+				pw.println("专利代理机构："+vo.getAgency());
+				pw.println("代理人："+vo.getAgent());
+				pw.println("摘要："+vo.getSummary());
+				pw.println(lineSeparators);
+			}
+			pw.close();
+		} catch (IOException e) {
+			logger.error("IOException",e);
+		}
+	}
+	
+	private void zipFile(String ...fileNames){
+		for(String fileName:fileNames){
+			try {
+				ZipUtils.compress(globalConstant.getBasePath() + "temp/" +fileName);
+			} catch (Exception e) {
+				logger.error("Compress File error!",e);
+			}
+		}
+	}
 }

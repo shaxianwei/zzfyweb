@@ -72,7 +72,7 @@
 			                FROM patent_notice_fawen
 			                WHERE patent_main.patent_no = patent_notice_fawen.patent_no order by sequnce_no desc
 			                ),
-			        ';\r\n'
+			        ';'
 			        ) AS fawen_info,
                     patent_info.*
 			 from patent_main

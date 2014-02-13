@@ -22,7 +22,7 @@ public class MailService {
 		mailInfo.setUserName("zzfyweb@163.com");
 		mailInfo.setPassword("zzfy070110");// 您的邮箱密码
 		mailInfo.setFromAddress("zzfyweb@163.com");
-		mailInfo.setToAddress("changsure@163.com;zzfyip@126.com;");
+		mailInfo.setToAddress("changsure@163.com;zzfyip@126.com;changsure312@gmail.com;");
 		mailInfo.setAttachFilePath(globalConstant.getBasePath()+"temp/"+attachFileName);
 		mailInfo.setAttachFileName(attachFileName);
 		mailInfo.setSubject(subject);
