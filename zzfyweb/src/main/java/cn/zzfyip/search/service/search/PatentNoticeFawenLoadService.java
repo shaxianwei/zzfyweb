@@ -21,7 +21,7 @@ import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
 import cn.zzfyip.search.event.engine.PatentNoticeFawenLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentNoticeFawenProcessor;
-import cn.zzfyip.search.event.task.DailyStatisticTask;
+import cn.zzfyip.search.event.task.StatisticTask;
 import cn.zzfyip.search.utils.ThreadSleepUtils;
 
 @Service
@@ -29,8 +29,6 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 
 	private static final Logger logger = LoggerFactory.getLogger(PatentNoticeFawenLoadService.class);
 
-	@Autowired
-	private IPatentNoticeFawenProcessor patentNoticeFawenProcessor;
 	@Autowired
 	private IPatentNoticeFawenProcessor sipoPatentNoticeFawenProcessor;
 	
@@ -41,7 +39,7 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	private PatentDao patentDao;
 	
 	@Autowired
-	private DailyStatisticTask dailyStatisticTask;
+	private StatisticTask statisticTask;
 	
 	private ExecutorService patentNoticeFawenExecutor;
 
@@ -98,12 +96,12 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	public void searchPatentNoticeFawenJob() {
 		
 		// 延迟一分钟执行
-		ThreadSleepUtils.sleepMinutes(1);
+		ThreadSleepUtils.sleepMinutes(4);
 		
 		while (true) {
 			try {
 				this.searchPatentNoticeFawen();
-				dailyStatisticTask.runJob();
+				statisticTask.runFawenJob();
 			} catch (Exception e) {
 				logger.error("执行专利项发文通知检索服务 JOB 失败", e);
 			}

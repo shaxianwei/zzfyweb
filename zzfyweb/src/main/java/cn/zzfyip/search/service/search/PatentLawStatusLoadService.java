@@ -68,7 +68,7 @@ public class PatentLawStatusLoadService implements InitializingBean {
 	public void searchPatentLawStatusJob() {
 
 		// 延迟一分钟执行
-		ThreadSleepUtils.sleepMinutes(1);
+		ThreadSleepUtils.sleepMinutes(3);
 
 		while (true) {
 			try {

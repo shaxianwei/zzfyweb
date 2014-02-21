@@ -67,7 +67,7 @@ public class PatentInfoLoadService implements InitializingBean {
 	public void searchPatentInfoJob() {
 
 		// 延迟一分钟执行
-		ThreadSleepUtils.sleepMinutes(1);
+		ThreadSleepUtils.sleepMinutes(2);
 
 		while (true) {
 			try {

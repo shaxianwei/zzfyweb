@@ -18,7 +18,7 @@
 	    <result column="patent_law_status_search_time" property="patentLawStatusSearchTime" jdbcType="TIMESTAMP" />
 	</resultMap>
 	
-	<resultMap id="PatentFawenVo" type="cn.zzfyip.search.dal.common.vo.PatentFawenVo" >
+	<resultMap id="PatentStatisticVo" type="cn.zzfyip.search.dal.common.vo.PatentStatisticVo" >
 	    <id column="patent_no" property="patentNo" jdbcType="VARCHAR" />
 	    <result column="apply_date" property="applyDate" jdbcType="TIMESTAMP" />
 	    <result column="patent_name" property="patentName" jdbcType="VARCHAR" />
@@ -39,7 +39,7 @@
 	    <result column="agent" property="agent" jdbcType="VARCHAR" />
 	    <result column="summary" property="summary" jdbcType="VARCHAR" />
 	    <result column="add_date" property="addDate" jdbcType="TIMESTAMP" />
-	    <result column="fawen_info" property="fawenInfo" jdbcType="VARCHAR" />
+	    <result column="ext_info" property="extInfo" jdbcType="VARCHAR" />
 	</resultMap>
 
 	<select id="selectMaxPublicDateInPatentMain" resultType="java.util.Date">
@@ -63,7 +63,12 @@
 			SELECT * FROM public.patent_main where patent_status not in ('CHEHUI') order by patent_law_status_search_time,patent_main.patent_type,patent_main.public_date  limit 100;
 		]]>
 	</select>
-	<select id="selectFawenStatisticData" parameterType="map" resultMap="PatentFawenVo">
+	<select id="selectFirst100RecordPatentFeeSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
+		<![CDATA[
+			SELECT * FROM public.patent_main where patent_status not in ('CHEHUI') order by patent_fee_wuxiao_search_time,public_date,patent_type  limit 100;
+		]]>
+	</select>
+	<select id="selectFawenStatisticData" parameterType="map" resultMap="PatentStatisticVo">
 		<![CDATA[
 			select array_to_string
 			        (
@@ -73,11 +78,31 @@
 			                WHERE patent_main.patent_no = patent_notice_fawen.patent_no order by sequnce_no desc
 			                ),
 			        ';'
-			        ) AS fawen_info,
+			        ) AS ext_info,
                     patent_info.*
 			 from patent_main
              left join patent_info on patent_main.patent_no=patent_info.patent_no
-            where patent_fawen_search_type='DABIAN' and patent_fawen_search_time='2014-01-26' order by public_date
+            where patent_fawen_search_type='DABIAN' and patent_fawen_search_time='${fawenUpdateDate}' order by public_date
+			;
+		]]>
+	</select>
+	
+	<select id="selectFeeStatisticData" parameterType="map" resultMap="PatentStatisticVo">
+		<![CDATA[
+			select array_to_string
+			        (
+			        ARRAY   (
+			                SELECT to_char(fee_date, 'YYYY-MM-DD')||','||COALESCE(fee_type,'')||','||COALESCE(fee_person,'')||','||COALESCE(status,'')
+			                FROM patent_fee
+			                WHERE patent_main.patent_no = patent_fee.patent_no order by fee_date desc
+			                ),
+			        ';'
+			        ) AS ext_info,
+                    patent_info.*
+			 from patent_main
+             left join patent_info on patent_main.patent_no=patent_info.patent_no
+            where patent_main.patent_no in (select distinct patent_no from patent_fee where fee_type='发明专利权无效宣告请求费' and fee_date between '${fromDate}' and '${endDate}')
+            order by public_date
 			;
 		]]>
 	</select>

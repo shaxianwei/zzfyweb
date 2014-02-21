@@ -22,7 +22,7 @@ public class ZipUtils {
 	private static final String BASE_DIR = "";
 
 	// 符号"/"用来作为目录标识判断符
-	private static final String PATH = "/";
+	private static final String PATH = "";
 	private static final int BUFFER = 1024;
 
 	/**
@@ -34,7 +34,7 @@ public class ZipUtils {
 	public static void compress(File srcFile) throws Exception {
 		String name = srcFile.getName();
 		String basePath = srcFile.getParent();
-		String destPath = basePath + name + EXT;
+		String destPath = basePath+"/" + name + EXT;
 		compress(srcFile, destPath);
 	}
 
@@ -54,7 +54,7 @@ public class ZipUtils {
 
 		ZipOutputStream zos = new ZipOutputStream(cos);
 
-		compress(srcFile, zos, BASE_DIR+"temp/");
+		compress(srcFile, zos, BASE_DIR);
 
 		zos.flush();
 		zos.close();

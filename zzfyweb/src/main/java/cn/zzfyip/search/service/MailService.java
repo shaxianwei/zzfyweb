@@ -19,9 +19,9 @@ public class MailService {
 		mailInfo.setMailServerHost("smtp.163.com");
 		mailInfo.setMailServerPort("25");
 		mailInfo.setValidate(true);
-		mailInfo.setUserName("zzfyweb@163.com");
+		mailInfo.setUserName("zzfyweb2@163.com");
 		mailInfo.setPassword("zzfy070110");// 您的邮箱密码
-		mailInfo.setFromAddress("zzfyweb@163.com");
+		mailInfo.setFromAddress("zzfyweb2@163.com");
 		mailInfo.setToAddress("changsure@163.com;zzfyip@126.com;changsure312@gmail.com;");
 		mailInfo.setAttachFilePath(globalConstant.getBasePath()+"temp/"+attachFileName);
 		mailInfo.setAttachFileName(attachFileName);

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
-import cn.zzfyip.search.dal.common.vo.PatentFawenVo;
+import cn.zzfyip.search.dal.common.vo.PatentStatisticVo;
 import cn.zzfyip.search.utils.DateUtils;
 import cn.zzfyip.search.utils.ZipUtils;
 
@@ -40,27 +41,44 @@ public class ReportService {
 	PatentDao patentDao;
 	
 	public void generateFawenReport(PatentStatisticJob job){
-		List<PatentFawenVo> list = patentDao.selectPatentFawenVoListByFawenUpdateDate(job.getFawenUpdateDate());
+		List<PatentStatisticVo> list = patentDao.selectPatentFawenStatisticVoListByFawenUpdateDate(job.getFawenUpdateDate());
 		
 		//XSL file
-		HSSFWorkbook workbook = new HSSFWorkbook();
-		createFawenSheet(workbook,list);
-		String fileName = String.format("(%s)_fawen_report.xls", DateUtils.formatDate(job.getFawenUpdateDate()));
-		writeExcelToFile(workbook, fileName);
+//		HSSFWorkbook workbook = new HSSFWorkbook();
+//		createFawenSheet(workbook,list,"发文检索结果");
+//		String fileName = String.format("(%s)_fawen_report.xls", DateUtils.formatDate(job.getFawenUpdateDate()));
+//		writeExcelToFile(workbook, fileName);
 		
 		//TXT file
 		String fileName2 = String.format("(%s)_fawen_report.txt", DateUtils.formatDate(job.getFawenUpdateDate()));
 		writeTxtToFile(list, fileName2);
 		
 		//ZIP these files
-		zipFile(fileName,fileName2);
+		zipFile(fileName2);
 		
-		String zipFileName = String.format("(%s)_fawen_report.zip", DateUtils.formatDate(job.getFawenUpdateDate()));
-		
-		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2);
+		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2+".zip");
 		
 		job.setJobStatus("FINISH");
 		patentDao.updatePatentStatisticJobRecord(job);
+	}
+	
+	public void generateFeeReport(Date fromDay, Date endDay){
+		List<PatentStatisticVo> list = patentDao.selectPatentFeeStatisticVoListByFromDateAndEndDate(fromDay,endDay);
+		
+		//XSL file
+//		HSSFWorkbook workbook = new HSSFWorkbook();
+//		createFawenSheet(workbook,list,"无效收费检索结果");
+//		String fileName = String.format("(%s)to(%s)_wuxiao_report.xls", DateUtils.formatDate(fromDay), DateUtils.formatDate(endDay));
+//		writeExcelToFile(workbook, fileName);
+		
+		//TXT file
+		String fileName2 = String.format("(%s)to(%s)_wuxiao_report.txt", DateUtils.formatDate(fromDay), DateUtils.formatDate(endDay));
+		writeTxtToFile(list, fileName2);
+		
+		//ZIP these files
+		zipFile(fileName2);
+		
+//		mailService.sendMail("从"+DateUtils.formatDate(fromDay)+"到"+DateUtils.formatDate(endDay)+"无效收费数据导出", "见附件", fileName2+".zip");
 	}
 	
 	private File writeExcelToFile(HSSFWorkbook workbook, String fileName) {
@@ -87,8 +105,8 @@ public class ReportService {
         return reportFile;
     }
 	
-	private HSSFSheet createFawenSheet(HSSFWorkbook workbook,List<PatentFawenVo> list) {
-        HSSFSheet sheet = workbook.createSheet("发文检索结果");
+	private HSSFSheet createFawenSheet(HSSFWorkbook workbook,List<PatentStatisticVo> list,String sheetName) {
+        HSSFSheet sheet = workbook.createSheet(sheetName);
         
         int r = 0;
         int c = 0;
@@ -99,7 +117,7 @@ public class ReportService {
         cell.setCellValue("专利号");
 
         cell = header.createCell(c++);
-        cell.setCellValue("发文通知内容");
+        cell.setCellValue("通知或收费内容");
         
         cell = header.createCell(c++);
         cell.setCellValue("申请日");
@@ -147,7 +165,7 @@ public class ReportService {
         cell.setCellValue("摘要");
 
 
-        for(PatentFawenVo vo:list){
+        for(PatentStatisticVo vo:list){
             c = 0;
             HSSFRow bodyRow = sheet.createRow(r++);
             
@@ -155,7 +173,7 @@ public class ReportService {
             cell.setCellValue(vo.getPatentNo());
 
             cell = bodyRow.createCell(c++);
-            cell.setCellValue(vo.getFawenInfo());
+            cell.setCellValue(vo.getExtInfo());
 
             cell = bodyRow.createCell(c++);
             cell.setCellValue(DateUtils.formatDate(vo.getApplyDate()));
@@ -215,17 +233,17 @@ public class ReportService {
         return sheet;
     }
 	
-	private void writeTxtToFile(List<PatentFawenVo> list,String fileName){
+	private void writeTxtToFile(List<PatentStatisticVo> list,String fileName){
 		try {
 			PrintWriter pw = new PrintWriter( new FileWriter( globalConstant.getBasePath() + "temp/" +fileName) );
 			String lineSeparators ="\r\n----------------------------------------------------------------\r\n";
 			pw.println(fileName);
 			pw.println(lineSeparators);
-			for(PatentFawenVo vo:list){
+			for(PatentStatisticVo vo:list){
 				pw.println("专利号："+vo.getPatentNo());
-				pw.println("发文通知内容：");
-				if(StringUtils.isNotBlank(vo.getFawenInfo())){
-					String[] fawenLines = StringUtils.split(vo.getFawenInfo(), ";");
+				pw.println("内容：");
+				if(StringUtils.isNotBlank(vo.getExtInfo())){
+					String[] fawenLines = StringUtils.split(vo.getExtInfo(), ";");
 					for(String fawenLine:fawenLines){
 						pw.println(fawenLine+";");
 					}

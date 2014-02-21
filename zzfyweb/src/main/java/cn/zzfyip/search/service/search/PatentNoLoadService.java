@@ -174,7 +174,7 @@ public class PatentNoLoadService implements InitializingBean {
 	 */
 	public void addUnsearchedPatentRecordToPatentMainJob() {
 		// 延迟一分钟执行
-		ThreadSleepUtils.sleepMinutes(1);
+		ThreadSleepUtils.sleepMinutes(5);
 		
 		while (true) {
 			try {

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecord;
 import cn.zzfyip.search.dal.common.entity.AddPatentRecordExample;
+import cn.zzfyip.search.dal.common.entity.PatentFee;
+import cn.zzfyip.search.dal.common.entity.PatentFeeExample;
 import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.dal.common.entity.PatentMainExample;
@@ -20,11 +22,12 @@ import cn.zzfyip.search.dal.common.entity.PatentNoticeFawenExample;
 import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
 import cn.zzfyip.search.dal.common.entity.PatentStatisticJobExample;
 import cn.zzfyip.search.dal.common.mapper.AddPatentRecordMapper;
+import cn.zzfyip.search.dal.common.mapper.PatentFeeMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentInfoMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentMainMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentNoticeFawenMapper;
 import cn.zzfyip.search.dal.common.mapper.PatentStatisticJobMapper;
-import cn.zzfyip.search.dal.common.vo.PatentFawenVo;
+import cn.zzfyip.search.dal.common.vo.PatentStatisticVo;
 import cn.zzfyip.search.utils.DateUtils;
 
 @Repository
@@ -44,6 +47,9 @@ public class PatentDao {
 	
 	@Autowired
 	PatentNoticeFawenMapper patentNoticeFawenMapper;
+	
+	@Autowired
+	PatentFeeMapper patentFeeMapper;
 	
 	@Autowired
 	PatentStatisticJobMapper patentStatisticJobMapper;
@@ -117,12 +123,30 @@ public class PatentDao {
 	    }
 	}
 	
+//	@Transactional
+	public void refreshPatentFeeByPatentNo(String patentNo,List<PatentFee> list){
+		PatentFeeExample example = new PatentFeeExample();
+		example.createCriteria().andPatentNoEqualTo(patentNo);
+		Integer patentFeeCount = patentFeeMapper.countByExample(example);
+		if(patentFeeCount.intValue()==list.size()){
+			return;
+		}
+		patentFeeMapper.deleteByExample(example);
+		for(PatentFee record:list){
+			patentFeeMapper.insertSelective(record);
+		}
+	}
+	
 	public List<PatentMain> selectFirst100RecordPatentNoticeFawenSearchPatentMain(Date fawenUpdateDate){
         Map<String,String> paramMap = new HashMap<String,String>();
         paramMap.put("fawenUpdateDate", DateUtils.formatDate(fawenUpdateDate));
 	    
 	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentNoticeFawenSearchPatentMain",paramMap);
     }
+	
+	public List<PatentMain> selectFirst100RecordPatentFeeSearchPatentMain(){
+		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentFeeSearchPatentMain");
+	}
 	
 	public List<PatentMain> selectFirst100RecordPatentLawStatusSearchPatentMain(){
 		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentLawStatusSearchPatentMain");
@@ -147,10 +171,17 @@ public class PatentDao {
 		return patentStatisticJobMapper.selectByExample(example);
 	}
 	
-	public List<PatentFawenVo> selectPatentFawenVoListByFawenUpdateDate(Date fawenUpdateDate){
+	public List<PatentStatisticVo> selectPatentFawenStatisticVoListByFawenUpdateDate(Date fawenUpdateDate){
 		Map<String,String> paramMap = new HashMap<String,String>();
         paramMap.put("fawenUpdateDate", DateUtils.formatDate(fawenUpdateDate));
 	    
 	    return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFawenStatisticData",paramMap);
+	}
+	public List<PatentStatisticVo> selectPatentFeeStatisticVoListByFromDateAndEndDate(Date fromDate,Date endDate){
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("fromDate", DateUtils.formatDate(fromDate));
+		paramMap.put("endDate", DateUtils.formatDate(endDate));
+		
+		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFeeStatisticData",paramMap);
 	}
 }

@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentStatisticJob;
 import cn.zzfyip.search.service.ReportService;
+import cn.zzfyip.search.utils.DateUtils;
 
 @Service
-public class DailyStatisticTask {
+public class StatisticTask {
 
 	@Autowired
 	ReportService reportService;
@@ -21,10 +22,10 @@ public class DailyStatisticTask {
 	@Autowired
 	PatentDao patentDao;
 	
-	private static final Logger logger = LoggerFactory.getLogger(DailyStatisticTask.class);
+	private static final Logger logger = LoggerFactory.getLogger(StatisticTask.class);
 
-	public void runJob() {
-		DailyStatisticTask.logger.info("DailyStatisticTask start!");
+	public void runFawenJob() {
+		StatisticTask.logger.info("DailyStatisticTask start!");
 		try {
 			
 			List<PatentStatisticJob> jobList = patentDao.selectInitFawenPatentStatisticJobList();
@@ -42,6 +43,18 @@ public class DailyStatisticTask {
 		} catch (Exception e) {
 			logger.error("任务执行失败",e);
 		}
-		DailyStatisticTask.logger.info("DailyStatisticTask finished!");
+		StatisticTask.logger.info("DailyStatisticTask finished!");
+	}
+	
+	public void runFeeJob() {
+		StatisticTask.logger.info("Fee StatisticTask start!");
+		try {
+			Date today = DateUtils.today();
+			Date monthEarlyDate = DateUtils.addMonth(today, -1);
+			reportService.generateFeeReport(monthEarlyDate,today);
+		} catch (Exception e) {
+			logger.error("任务执行失败",e);
+		}
+		StatisticTask.logger.info("Fee StatisticTask finished!");
 	}
 }

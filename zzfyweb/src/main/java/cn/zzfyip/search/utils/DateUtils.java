@@ -105,6 +105,23 @@ public class DateUtils {
         c.add(Calendar.DAY_OF_YEAR, days);
         return c.getTime();
     }
+    
+    /**
+     * 在指定日期增加指定天数
+     * 
+     * @param date 指定日期
+     * @param days 指定天数
+     * @return
+     */
+    public static Date addMonth(Date date, int months) {
+    	if (months == 0) {
+    		return date;
+    	}
+    	Calendar c = Calendar.getInstance();
+    	c.setTime(date);
+    	c.add(Calendar.MONTH, months);
+    	return c.getTime();
+    }
 
     /**
      * 在指定日期增加指定天数
