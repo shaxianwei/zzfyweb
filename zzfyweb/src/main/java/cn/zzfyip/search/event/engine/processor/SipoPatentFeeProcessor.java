@@ -40,6 +40,11 @@ public class SipoPatentFeeProcessor implements IPatentFeeProcessor {
 //		logger.info("response = {}", response);
 
 		List<PatentFee> patentFeeList = new ArrayList<PatentFee>();
+		
+		//如果该文还没有通知书
+        if(StringUtils.contains(response, "暂无收费信息")){
+        	return patentFeeList;
+        }
 		try {
 			String[] responseArrays = response.split("<tr onMouseOver=");
 			int sequnceNo = 0;
@@ -81,7 +86,7 @@ public class SipoPatentFeeProcessor implements IPatentFeeProcessor {
 	}
 
 	public static void main(String[] args) throws PatentNoLoadHttpWrongException, PatentPharseException {
-		System.out.println(new SipoPatentFeeProcessor().processPatentFee("201330255477.0"));
+		System.out.println(new SipoPatentFeeProcessor().processPatentFee("200910151258.0"));
 	}
 
 }
