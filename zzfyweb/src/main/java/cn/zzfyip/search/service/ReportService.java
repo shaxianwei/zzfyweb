@@ -56,7 +56,7 @@ public class ReportService {
 		//ZIP these files
 		zipFile(fileName2);
 		
-		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2+".zip");
+		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2+".zip","changsure@163.com;zzfyip@126.com;changsure312@gmail.com;");
 		
 		job.setJobStatus("FINISH");
 		patentDao.updatePatentStatisticJobRecord(job);
@@ -78,7 +78,7 @@ public class ReportService {
 		//ZIP these files
 		zipFile(fileName2);
 		
-//		mailService.sendMail("从"+DateUtils.formatDate(fromDay)+"到"+DateUtils.formatDate(endDay)+"无效收费数据导出", "见附件", fileName2+".zip");
+		mailService.sendMail("从"+DateUtils.formatDate(fromDay)+"到"+DateUtils.formatDate(endDay)+"无效收费数据导出", "见附件", fileName2+".zip","changsure@163.com;lawyerchym@163.com;changsure312@gmail.com;");
 	}
 	
 	private File writeExcelToFile(HSSFWorkbook workbook, String fileName) {
