@@ -66,6 +66,12 @@ public class GlobalConstant {
     @Value("${patentWuxiaoFee.threadDelayMilliSeconds}")
     private Integer patentWuxiaoFeeThreadDelayMilliSeconds;
     
+    @Value("${patentPaperStatus.searchThreadNum}")
+    private Integer patentPaperStatusSearchThreadNum;
+    
+    @Value("${patentPaperStatus.threadDelayMilliSeconds}")
+    private Integer patentPaperStatusThreadDelayMilliSeconds;
+    
 	public String getBasePath() {
 		return basePath;
 	}
@@ -143,4 +149,12 @@ public class GlobalConstant {
 		return patentWuxiaoFeeThreadDelayMilliSeconds;
 	}
 
+	public Integer getPatentPaperStatusSearchThreadNum() {
+		return patentPaperStatusSearchThreadNum;
+	}
+
+	public Integer getPatentPaperStatusThreadDelayMilliSeconds() {
+		return patentPaperStatusThreadDelayMilliSeconds;
+	}
+	
 }

@@ -101,5 +101,13 @@ public class ToolboxController {
     	statisticTask.runFeeJob();
     	return StandardJsonObject.newCorrectJsonObject();
     }
+    
+    @ResponseBody
+    @RequestMapping(params = "method=doBohuiStatisticJob", method = { RequestMethod.GET })
+    public StandardJsonObject doBohuiStatisticJob()
+    		throws Exception {
+    	statisticTask.runBohuiJob();
+    	return StandardJsonObject.newCorrectJsonObject();
+    }
 
 }

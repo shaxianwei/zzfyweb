@@ -56,7 +56,7 @@ public class ReportService {
 		//ZIP these files
 		zipFile(fileName2);
 		
-		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2+".zip","changsure@163.com;zzfyip@126.com;changsure312@gmail.com;");
+		mailService.sendMail(DateUtils.formatDate(job.getFawenUpdateDate())+"更新日发文数据导出", "见附件", fileName2+".zip","changsure@163.com;zzfyip@126.com;lawyerchym@163.com;changsure312@gmail.com;");
 		
 		job.setJobStatus("FINISH");
 		patentDao.updatePatentStatisticJobRecord(job);
@@ -78,7 +78,20 @@ public class ReportService {
 		//ZIP these files
 		zipFile(fileName2);
 		
-		mailService.sendMail("从"+DateUtils.formatDate(fromDay)+"到"+DateUtils.formatDate(endDay)+"无效收费数据导出", "见附件", fileName2+".zip","changsure@163.com;lawyerchym@163.com;changsure312@gmail.com;");
+		mailService.sendMail("从"+DateUtils.formatDate(fromDay)+"到"+DateUtils.formatDate(endDay)+"无效数据导出", "见附件", fileName2+".zip","changsure@163.com;lawyerchym@163.com;changsure312@gmail.com;");
+	}
+	
+	public void generateBohuiReport(Date fromDay, Date endDay){
+		List<PatentStatisticVo> list = patentDao.selectPatentBohuiStatisticVoListByFromDateAndEndDate(fromDay,endDay);
+		
+		//TXT file
+		String fileName2 = String.format("(%s)to(%s)_bohui_report.txt", DateUtils.formatDate(fromDay), DateUtils.formatDate(endDay));
+		writeTxtToFile(list, fileName2);
+		
+		//ZIP these files
+		zipFile(fileName2);
+		
+		mailService.sendMail("从"+DateUtils.formatDate(fromDay)+"到"+DateUtils.formatDate(endDay)+"驳回数据导出", "见附件", fileName2+".zip","changsure@163.com;zzfyip@126.com;lawyerchym@163.com;changsure312@gmail.com;");
 	}
 	
 	private File writeExcelToFile(HSSFWorkbook workbook, String fileName) {
@@ -241,6 +254,7 @@ public class ReportService {
 			pw.println(lineSeparators);
 			for(PatentStatisticVo vo:list){
 				pw.println("专利号："+vo.getPatentNo());
+				pw.println("案卷状态："+vo.getPaperStatus());
 				pw.println("内容：");
 				if(StringUtils.isNotBlank(vo.getExtInfo())){
 					String[] fawenLines = StringUtils.split(vo.getExtInfo(), ";");

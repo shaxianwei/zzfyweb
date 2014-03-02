@@ -152,6 +152,10 @@ public class PatentDao {
 		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentLawStatusSearchPatentMain");
 	}
 	
+	public List<PatentMain> selectFirst100RecordPatentPaperStatusSearchPatentMain(){
+		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFirst100RecordPatentPaperStatusSearchPatentMain");
+	}
+	
 	public void insertPatentStatisticJobRecord(PatentStatisticJob record){
 		patentStatisticJobMapper.insertSelective(record);
 	}
@@ -183,5 +187,12 @@ public class PatentDao {
 		paramMap.put("endDate", DateUtils.formatDate(endDate));
 		
 		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectFeeStatisticData",paramMap);
+	}
+	public List<PatentStatisticVo> selectPatentBohuiStatisticVoListByFromDateAndEndDate(Date fromDate,Date endDate){
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("fromDate", DateUtils.formatDate(fromDate));
+		paramMap.put("endDate", DateUtils.formatDate(endDate));
+		
+		return sqlSession.selectList("cn.zzfyip.search.dal.common.dao.PatentDao.selectBohuiStatisticData",paramMap);
 	}
 }

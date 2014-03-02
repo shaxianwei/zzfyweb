@@ -42,7 +42,7 @@
 	</bean>
 
 	<!-- 定时器配置 -->
-	<bean id="statisticTaskJob"
+	<bean id="statisticFeeTaskJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject">
 			<ref bean="statisticTask" />
@@ -51,19 +51,37 @@
 			<value>runFeeJob</value>
 		</property>
 	</bean>
-	<bean id="statisticTaskJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	<bean id="statisticFeeTaskJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail">
-			<ref bean="statisticTaskJob" />
+			<ref bean="statisticFeeTaskJob" />
 		</property>
 		<property name="cronExpression">
 			<value>0 0 0 25 * ?</value>
+		</property>
+	</bean>
+	<bean id="statisticBohuiTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="statisticTask" />
+		</property>
+		<property name="targetMethod">
+			<value>runBohuiJob</value>
+		</property>
+	</bean>
+	<bean id="statisticBohuiTaskJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="statisticBohuiTaskJob" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0 0 10 * ?</value>
 		</property>
 	</bean>
 	<bean id="quartzScheduler" lazy-init="false" autowire="no"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="statisticTaskJobTrigger" />
+				<ref bean="statisticFeeTaskJobTrigger" />
+				<ref bean="statisticBohuiTaskJobTrigger" />
 			</list>
 		</property>
 	</bean>

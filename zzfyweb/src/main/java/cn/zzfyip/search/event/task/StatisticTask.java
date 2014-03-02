@@ -57,4 +57,16 @@ public class StatisticTask {
 		}
 		StatisticTask.logger.info("Fee StatisticTask finished!");
 	}
+	
+	public void runBohuiJob() {
+		StatisticTask.logger.info("Bohui StatisticTask start!");
+		try {
+			Date today = DateUtils.addDay(new Date(), 1);
+			Date monthEarlyDate = DateUtils.addMonth(today, -1);
+			reportService.generateBohuiReport(monthEarlyDate,today);
+		} catch (Exception e) {
+			logger.error("任务执行失败",e);
+		}
+		StatisticTask.logger.info("Bohui StatisticTask finished!");
+	}
 }

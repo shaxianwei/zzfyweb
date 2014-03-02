@@ -15,7 +15,6 @@ import cn.zzfyip.search.common.constant.GlobalConstant;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
-import cn.zzfyip.search.event.engine.PatentInfoLoader;
 import cn.zzfyip.search.event.engine.PatentLawStatusLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentListProcessor;
 import cn.zzfyip.search.utils.ThreadSleepUtils;
