@@ -20,6 +20,7 @@ import cn.zzfyip.search.utils.JsonUtils;
 import cn.zzfyip.search.utils.SpringContextUtils;
 import cn.zzfyip.search.utils.ThreadSleepUtils;
 
+@Deprecated
 public class PatentLawStatusLoader implements Runnable{
     
     private static final Logger logger = LoggerFactory.getLogger(PatentLawStatusLoader.class);

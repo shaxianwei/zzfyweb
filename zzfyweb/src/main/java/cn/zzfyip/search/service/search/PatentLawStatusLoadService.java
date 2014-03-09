@@ -19,6 +19,7 @@ import cn.zzfyip.search.event.engine.PatentLawStatusLoader;
 import cn.zzfyip.search.event.engine.processor.IPatentListProcessor;
 import cn.zzfyip.search.utils.ThreadSleepUtils;
 
+@Deprecated
 @Service
 public class PatentLawStatusLoadService implements InitializingBean {
 

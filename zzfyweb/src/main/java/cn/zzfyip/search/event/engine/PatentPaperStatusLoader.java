@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.zzfyip.search.common.constant.GlobalConstant;
+import cn.zzfyip.search.common.constant.PatentConstants;
 import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
 import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.dal.common.dao.PatentDao;
@@ -53,6 +54,13 @@ public class PatentPaperStatusLoader implements Runnable{
         	patentPaperStatus = patentPaperStatusProcessor.processPatentPaperStatus(patentMain.getPatentNo());
             patentMain.setPatentPaperStatus(patentPaperStatus);
             patentMain.setPatentPaperStatusSearchTime(new Date());
+            
+            if(StringUtils.contains(patentPaperStatus, "失效")||StringUtils.contains(patentPaperStatus, "放弃专利权")){
+            	if(!StringUtils.equals(patentMain.getPatentFawenSearchType(), PatentConstants.FAWEN_STATUS_04_NOSEARCH)){
+            		patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
+            	}
+            }
+            
             patentDao.updatePatentMain(patentMain);
             
             //如果案卷状态包括了 驳回 ，则进行发文检索

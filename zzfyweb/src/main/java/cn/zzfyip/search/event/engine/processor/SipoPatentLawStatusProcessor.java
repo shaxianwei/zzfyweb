@@ -13,6 +13,7 @@ import cn.zzfyip.search.common.exception.PatentNoLoadHttpWrongException;
 import cn.zzfyip.search.common.exception.PatentPharseException;
 import cn.zzfyip.search.utils.HttpClientUtils;
 
+@Deprecated
 @Component
 public class SipoPatentLawStatusProcessor implements IPatentLawStatusProcessor {
 

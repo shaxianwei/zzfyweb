@@ -52,30 +52,30 @@
 
 	<select id="selectFirst100RecordPatentInfoSearchPatentMain" resultMap="BaseResultMap">
 		SELECT patent_main.* FROM public.patent_main left join patent_info on patent_main.patent_no= patent_info.patent_no
-			where patent_info.patent_no is null order by patent_main.patent_type,patent_main.public_date limit 100;
+			where patent_info.patent_no is null order by patent_main.patent_type,patent_main.public_date limit 300;
 	</select>
 	
 	<select id="selectFirst100RecordPatentNoticeFawenSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
 		<![CDATA[
-		SELECT * FROM public.patent_main where patent_fawen_search_type='NORMAL' and (patent_fawen_search_time < '${fawenUpdateDate}' or patent_fawen_search_time is null) order by patent_fawen_search_time,public_date limit 100;
+		SELECT * FROM public.patent_main where patent_fawen_search_type='NORMAL' and (patent_fawen_search_time < '${fawenUpdateDate}' or patent_fawen_search_time is null) order by patent_fawen_search_time,public_date limit 300;
 		]]>
 	</select>
 	
 	<select id="selectFirst100RecordPatentLawStatusSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
 		<![CDATA[
-			SELECT * FROM public.patent_main where patent_status not in ('CHEHUI') order by patent_law_status_search_time,patent_main.patent_type,patent_main.public_date  limit 100;
+			SELECT * FROM public.patent_main where patent_status not in ('CHEHUI') order by patent_law_status_search_time,patent_main.patent_type,patent_main.public_date  limit 300;
 		]]>
 	</select>
 	
 	<select id="selectFirst100RecordPatentPaperStatusSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
 		<![CDATA[
-			SELECT * FROM public.patent_main where patent_status!='CHEHUI' and ( patent_paper_status is null or patent_paper_status not in ('驳回等复审请求')) order by patent_paper_status_search_time,patent_main.patent_type,patent_main.public_date  limit 100;
+			SELECT * FROM public.patent_main where patent_paper_status not in ('实审请求视撤失效','逾期视撤失效','视为放弃失效','实审请求视撤失效','驳回失效','届满终止失效','放弃专利权（主动放弃）','放弃专利权（重复授权）','未缴年费终止失效','无效宣告失效') or patent_paper_status is null order by patent_paper_status_search_time,patent_main.patent_type,patent_main.public_date  limit 300;
 		]]>
 	</select>
 	
 	<select id="selectFirst100RecordPatentFeeSearchPatentMain" parameterType="map" resultMap="BaseResultMap">
 		<![CDATA[
-			SELECT * FROM public.patent_main where patent_status not in ('CHEHUI') order by patent_fee_wuxiao_search_time,public_date,patent_type  limit 100;
+			SELECT * FROM public.patent_main where patent_paper_status not in ('实审请求视撤失效','逾期视撤失效','视为放弃失效','实审请求视撤失效','驳回失效','届满终止失效','放弃专利权（主动放弃）','放弃专利权（重复授权）','未缴年费终止失效','无效宣告失效') or patent_paper_status is null order by patent_fee_wuxiao_search_time,public_date,patent_type  limit 300;
 		]]>
 	</select>
 	<select id="selectFawenStatisticData" parameterType="map" resultMap="PatentStatisticVo">

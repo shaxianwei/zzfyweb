@@ -1,5 +1,6 @@
 package cn.zzfyip.search.event.engine;
 
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +17,7 @@ import cn.zzfyip.search.dal.common.entity.PatentInfo;
 import cn.zzfyip.search.dal.common.entity.PatentMain;
 import cn.zzfyip.search.event.engine.processor.IPatentInfoProcessor;
 import cn.zzfyip.search.event.engine.processor.SipoPatentInfoProcessor;
+import cn.zzfyip.search.utils.DateUtils;
 import cn.zzfyip.search.utils.JsonUtils;
 import cn.zzfyip.search.utils.SpringContextUtils;
 import cn.zzfyip.search.utils.ThreadSleepUtils;
@@ -87,7 +89,10 @@ public class PatentInfoLoader implements Runnable{
     private void updatePatentMainByPatentInfo(PatentMain patentMain,PatentInfo patentInfo){
         patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_01_NORMAL);
         
-        if(!PatentConstants.TYPE_01_FAMING.equals(patentMain.getPatentType())){
+        Date twoYearsEarlyDate = DateUtils.addMonth(DateUtils.today(), -24);
+		if(null!=patentMain.getPublicDate() && twoYearsEarlyDate.after(patentMain.getPublicDate())){
+			patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
+		}else if(!PatentConstants.TYPE_01_FAMING.equals(patentMain.getPatentType())){
             patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);
         }else if(StringUtils.isNotBlank(patentInfo.getAgency())){
             patentMain.setPatentFawenSearchType(PatentConstants.FAWEN_STATUS_04_NOSEARCH);

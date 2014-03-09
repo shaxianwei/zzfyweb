@@ -49,9 +49,9 @@ public class StatisticTask {
 	public void runFeeJob() {
 		StatisticTask.logger.info("Fee StatisticTask start!");
 		try {
-			Date today = DateUtils.today();
-			Date monthEarlyDate = DateUtils.addMonth(today, -1);
-			reportService.generateFeeReport(monthEarlyDate,today);
+			Date today = DateUtils.addDay(new Date(), 1);
+			Date startDate = DateUtils.addMonth(today, -2);
+			reportService.generateFeeReport(startDate,today);
 		} catch (Exception e) {
 			logger.error("任务执行失败",e);
 		}
@@ -62,8 +62,8 @@ public class StatisticTask {
 		StatisticTask.logger.info("Bohui StatisticTask start!");
 		try {
 			Date today = DateUtils.addDay(new Date(), 1);
-			Date monthEarlyDate = DateUtils.addMonth(today, -1);
-			reportService.generateBohuiReport(monthEarlyDate,today);
+			Date startDate = DateUtils.addMonth(today, -2);
+			reportService.generateBohuiReport(startDate,today);
 		} catch (Exception e) {
 			logger.error("任务执行失败",e);
 		}

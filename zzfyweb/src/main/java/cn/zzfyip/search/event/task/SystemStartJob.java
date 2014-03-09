@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import cn.zzfyip.search.common.thread.NamedThreadFactory;
 import cn.zzfyip.search.service.search.PatentFeeLoadService;
 import cn.zzfyip.search.service.search.PatentInfoLoadService;
-import cn.zzfyip.search.service.search.PatentLawStatusLoadService;
 import cn.zzfyip.search.service.search.PatentNoLoadService;
 import cn.zzfyip.search.service.search.PatentNoticeFawenLoadService;
 import cn.zzfyip.search.service.search.PatentPaperStatusLoadService;
@@ -30,9 +29,6 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 	
 	@Autowired
 	PatentNoticeFawenLoadService patentNoticeFawenLoadService;
-	
-	@Autowired
-	PatentLawStatusLoadService patentLawStatusLoadService;
 	
 	@Autowired
 	PatentFeeLoadService patentFeeLoadService;
@@ -80,13 +76,6 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 			jobExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
-					patentLawStatusLoadService.searchPatentLawStatusJob();
-				}
-			});
-			
-			jobExecutor.execute(new Runnable() {
-				@Override
-				public void run() {
 					patentFeeLoadService.searchPatentFeeJob();
 				}
 			});
@@ -94,7 +83,7 @@ public class SystemStartJob implements ApplicationListener<ContextRefreshedEvent
 			jobExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
-					patentPaperStatusLoadService.searchPatentPaperStatus();
+					patentPaperStatusLoadService.searchPatentPaperStatusStatusJob();
 				}
 			});
 	    } 
