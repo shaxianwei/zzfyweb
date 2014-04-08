@@ -24,7 +24,7 @@
 		<oro.version>2.0.8</oro.version>
 		<commons-configuration.version>1.5</commons-configuration.version>
 		<org.apache.commons.email.version>1.2</org.apache.commons.email.version>
-		<org.apache.poi.version>3.7</org.apache.poi.version>
+		<org.apache.poi.version>3.8</org.apache.poi.version>
 		<joda-time.version>2.3</joda-time.version>
 		<org.quartz-scheduler.version>1.8.5</org.quartz-scheduler.version>
 		<org.slf4j.version>1.7.5</org.slf4j.version>

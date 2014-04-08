@@ -232,7 +232,7 @@ public class DateUtils {
             return null;
         }
         
-        if(date.length()==8){
+        if(date.length()==8&&StringUtils.containsNone(date, "-")){
         	return DateUtils.convertDate(date, DateUtils.DATE_SHORT_PATTERN);
         }
         

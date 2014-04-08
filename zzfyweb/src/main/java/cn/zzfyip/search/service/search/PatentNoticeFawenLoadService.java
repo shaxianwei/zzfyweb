@@ -96,7 +96,7 @@ public class PatentNoticeFawenLoadService implements InitializingBean{
 	public void searchPatentNoticeFawenJob() {
 		
 		// 延迟一分钟执行
-		ThreadSleepUtils.sleepMinutes(4);
+		ThreadSleepUtils.sleepMinutes(0);
 		
 		while (true) {
 			try {
